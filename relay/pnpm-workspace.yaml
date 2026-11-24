@@ -1,5 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+# Packages allowed to run install scripts (esbuild ships a native binary used by tsx).
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
