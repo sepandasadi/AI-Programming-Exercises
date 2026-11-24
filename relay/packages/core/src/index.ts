@@ -12,3 +12,8 @@ export type Health = z.infer<typeof HealthSchema>;
 export function health(): Health {
   return { status: "ok", version: RELAY_VERSION };
 }
+
+export type { DocSection, SearchResult } from "./search-types.js";
+export { SearchResultSchema } from "./search-types.js";
+export type { Token } from "./terms.js";
+export { queryTerms, tokenize } from "./terms.js";
