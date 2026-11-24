@@ -6,10 +6,14 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "dev": "pnpm --filter @relay/api dev"
+    "dev": "pnpm --filter @relay/api dev",
+    "spec:check": "tsx scripts/check-spec.ts"
   },
   "packageManager": "pnpm@12.4.1",
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
   }
 }
