@@ -29,12 +29,21 @@ A *section* is the text under one Markdown heading (levels
 Text before the first heading belongs to a section whose
 heading is the file name.
 
+Only ATX headings count (`# Title`), and lines inside
+fenced code blocks are never headings. A preamble that is
+only whitespace produces no section.
+
 A *term* is a lowercase run of letters or digits, at least
-two characters long. A section matches when its heading or
-body contains at least one query term.
+two characters long. Matching is by whole term: the query
+term `rollback` does not match `rollbacks`. Repeated
+query terms count once. A section matches when its heading
+or body contains at least one query term.
 
 Score = 3 x (heading occurrences) + (body occurrences),
 summed over all query terms.
+
+`limit` must be written as plain digits: `1e1` and `2.0`
+are rejected. "1 MB" means 1,048,576 bytes.
 
 ## Acceptance criteria
 
