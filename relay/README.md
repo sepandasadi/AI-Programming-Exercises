@@ -65,7 +65,7 @@ it is checked by `pnpm agents:check`, which CI runs.
 
 | What | Where | Read by |
 | --- | --- | --- |
-| Project instructions | `AGENTS.md`, `apps/api/AGENTS.md`, `packages/core/AGENTS.md` | Codex, Copilot, Cursor, Claude Code (no `CLAUDE.md`, so it reads `AGENTS.md`); Gemini CLI with `context.fileName` |
+| Project instructions | `AGENTS.md`, `apps/api/AGENTS.md`, `packages/core/AGENTS.md` | Codex, Copilot, Cursor, Claude Code (no `CLAUDE.md`, so it reads `AGENTS.md`); Gemini CLI through `context.fileName` in `.gemini/settings.json` |
 | Skills | `.agents/skills/` (`add-api-route`, `task`); `.claude/skills` is a symlink to it | Codex, Copilot, Cursor, Gemini CLI; Claude Code through the symlink |
 | Hooks | `scripts/hooks/*.mjs`, wired in `.claude/settings.json` and `.codex/hooks.json` | Claude Code, Codex (trusted projects; trust each hook in `/hooks`) |
 | MCP servers | `.mcp.json` (Claude Code, Copilot CLI), `.codex/config.toml` (Codex) | GitHub's server, read-only, issues and pull requests only |
