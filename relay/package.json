@@ -9,7 +9,8 @@
     "dev": "pnpm --filter @relay/api dev",
     "spec:check": "tsx scripts/check-spec.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "review:flags": "bash scripts/review-flags.sh"
   },
   "packageManager": "pnpm@12.4.1",
   "engines": {
