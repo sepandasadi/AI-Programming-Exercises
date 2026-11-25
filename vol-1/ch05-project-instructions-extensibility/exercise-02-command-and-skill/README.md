@@ -17,8 +17,10 @@ priority, using the `/task` command for each plan task and letting the
    (Codex: `$task sla-table 1`). Review the diff, rerun the gate, commit.
 4. In another fresh session, run `/task sla-table 2`. This task adds a
    route, so the agent should load `add-api-route` without being told.
-   Check its report: did it say it used the skill, and did it paste the
-   smoke check's output?
+   Check the trace for the skill and the report for the smoke output.
+   If the skill was skipped, invoke it explicitly and rerun Task 2 from
+   the checkpoint. `GET /sla` takes no input, so the handler needs no
+   request schema.
 5. If your tool doesn't read `.agents/skills/` or `.claude/skills/`, add
    the skill where it does look (see the Tool Lens sidebars in 5.8).
 

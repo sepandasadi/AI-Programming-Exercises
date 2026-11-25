@@ -17,14 +17,15 @@
    can simulate a failing check without breaking the code.
 3. Write `typecheck-on-stop.test.ts` next to it: pass, fail,
    `stop_hook_active`, and one run of the real typecheck.
-4. Wire it under `Stop` in `relay/.claude/settings.json` (or your tool's
-   equivalent: `Stop` in `.codex/hooks.json`, `AfterAgent` in Gemini
-   CLI, `stop` in Cursor, `agentStop` in Copilot). Give it a timeout long
-   enough for a typecheck.
+4. Wire it under `Stop` in `relay/.claude/settings.json`. Give it a
+   timeout long enough for a typecheck. If you port it to another agent,
+   check that tool's event payload, continuation response and loop guard.
 
 ## Verification
 
-- `pnpm vitest run scripts/hooks` passes, including your four tests.
+- From `relay/`, run `pnpm build` so the API can resolve core's
+  generated declarations. Then `pnpm vitest run scripts/hooks` should
+  pass, including your four tests.
 - `pnpm agents:check` passes: the wiring calls a script that exists.
 - Live: add `export const x: number = "no";` to a new file in
   `packages/core/src/`, ask your agent to make an unrelated one-line

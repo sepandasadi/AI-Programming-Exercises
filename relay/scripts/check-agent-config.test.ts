@@ -222,6 +222,30 @@ describe("checkAgentConfig", () => {
     ]);
   });
 
+  it.each([false, true])(
+    "flags a missing or dangling skills link (dangling: %s)",
+    async (dangling) => {
+      await repo({
+        "package.json": pkg,
+        ".agents/skills/s/SKILL.md":
+          "---\nname: s\ndescription: d\n---\n",
+      });
+      if (dangling) {
+        await mkdir(join(root, ".claude"));
+        await symlink(
+          "../missing",
+          join(root, ".claude/skills"),
+        );
+      }
+      expect(await checkAgentConfig(root)).toEqual([
+        {
+          file: ".claude/skills",
+          problem: "must be a symlink to ../.agents/skills",
+        },
+      ]);
+    },
+  );
+
   it("accepts the symlink", async () => {
     await repo({
       "package.json": pkg,

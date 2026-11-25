@@ -3,8 +3,12 @@
 // exist, skills are well formed, hooks call scripts that
 // exist, and no committed config holds a secret.
 // Usage (from relay/): tsx scripts/check-agent-config.ts
-import { existsSync, realpathSync } from "node:fs";
-import { readFile, readdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import {
+  readFile,
+  readdir,
+  readlink,
+} from "node:fs/promises";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -225,12 +229,18 @@ export async function checkAgentConfig(
   //    Claude Code reads only .claude/skills; it must be a
   //    link to .agents/skills, or the copies drift.
   const mirror = join(root, ".claude/skills");
-  if (
-    existsSync(mirror) &&
-    realpathSync(mirror) !==
-      realpathSync(join(root, ".agents/skills"))
-  )
-    add(mirror, "must be a symlink to ../.agents/skills");
+  const sharedSkills = join(root, ".agents/skills");
+  if (existsSync(sharedSkills) || existsSync(mirror)) {
+    const target = await readlink(mirror).catch(
+      () => undefined,
+    );
+    if (
+      target !== "../.agents/skills" ||
+      !existsSync(mirror)
+    ) {
+      add(mirror, "must be a symlink to ../.agents/skills");
+    }
+  }
 
   // 3. Hooks call scripts that exist.
   for (const file of HOOK_CONFIGS.map((f) =>

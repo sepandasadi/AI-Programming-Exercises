@@ -6,18 +6,19 @@ description: How to add or change an HTTP route in Relay's API (apps/api) - sche
 # Adding or changing a Relay API route
 
 1. **Spec first.** The route's behavior is in
-   `docs/specs/<feature>.md`. If there is no spec, or it doesn't
-   say what invalid input returns, stop and ask.
-2. **Schema in core.** Put the input schema in
+   `docs/specs/<feature>.md`. If there is no spec, or the route
+   takes input and the spec omits error behavior, stop and ask.
+2. **Schema in core.** If the route takes input, put its schema in
    `packages/core/src/<feature>-schema.ts` and export it from
    `src/index.ts`. Query values arrive as strings: parse them
    with a strict format (see `search-schema.ts`), not
    `z.coerce`.
 3. **Logic in core**, as a pure function with its own tests.
-4. **The handler** in `apps/api/src/app.ts`: `safeParse` the
-   input; on failure return 400 with `{ error }`, all issue
-   messages joined by "; "; otherwise call core and return
-   `c.json(...)`. Bodies get `bodyLimit` (see `/triage`).
+4. **The handler** in `apps/api/src/app.ts`: if the route takes
+   input, validate it with `safeParse` and return 400 with
+   `{ error }` on failure, joining messages with "; ". Use
+   `bodyLimit` for bodies (see `/triage`). Call core and return
+   `c.json(...)`. A route with no input calls core directly.
 5. **Tests** in `apps/api/src/app.<feature>.test.ts`, tagged
    `// spec: <feature>`, through `createApp(...).request(...)`.
    Parse every 200 body with a strict Zod schema, and cover each
