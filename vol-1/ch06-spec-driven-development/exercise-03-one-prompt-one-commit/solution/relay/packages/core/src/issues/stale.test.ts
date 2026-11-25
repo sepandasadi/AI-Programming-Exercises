@@ -1,3 +1,4 @@
+// spec: stale-issues
 import { describe, expect, it } from "vitest";
 import { type Issue, staleIssues } from "./stale.js";
 

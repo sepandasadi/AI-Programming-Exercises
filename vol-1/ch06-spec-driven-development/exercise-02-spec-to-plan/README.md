@@ -26,3 +26,10 @@ written.
 Build a coverage table: one row per acceptance criterion, one column
 per task, a mark where the task covers the criterion. Every row needs
 at least one mark. Compare with `solution/plan.md`.
+
+## Optional: try a spec tool
+
+Run the same spec through GitHub Spec Kit (`specify`, `plan`, `tasks`), Kiro
+specs or OpenSpec instead of the prompt from Listing 6.4. Compare the tool's
+plan with yours on the review checklist above. Does it ask clarifying
+questions you missed? Does it add scope your non-goals rule out?

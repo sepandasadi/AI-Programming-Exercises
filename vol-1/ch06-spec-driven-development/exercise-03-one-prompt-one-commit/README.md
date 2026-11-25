@@ -15,6 +15,8 @@ per prompt and one reviewed commit per task.
 ## Verification
 
 - `pnpm spec:check docs/specs/stale-issues.md` lists every criterion as `ok`.
+  It only counts tests titled `AC-n: ...` in files that start with
+  `// spec: stale-issues`, so tag your test files.
 - `pnpm build && pnpm typecheck && pnpm test` pass.
 - `git log --oneline v1-ch06..` shows one commit per task.
 - For at least one test, break the code on purpose (for example,
@@ -24,27 +26,17 @@ per prompt and one reviewed commit per task.
 
 ## Solution
 
-`solution/relay/` mirrors the paths in `relay/` and covers the core logic,
-the route and their tests (tested against tag `v1-ch06`). To use it:
+`solution/relay/` mirrors the paths in `relay/` and was tested against tag
+`v1-ch06`. Copy it over your `relay/` folder to see a complete
+implementation:
 
-1. Copy `solution/relay/` over your `relay/` folder.
-2. Export the new code from `packages/core/src/index.ts`:
+- `packages/core/src/issues/stale.ts`: `staleIssues` and `IssueSchema`
+- `apps/api/src/routes/stale-issues.ts`: `GET /issues/stale`
+- `apps/api/src/issues-file.ts`: loads `fixtures/issues.json` at startup and
+  stops the server if it is invalid (AC-8)
+- `apps/api/src/app.ts`, `apps/api/src/server.ts` and
+  `packages/core/src/index.ts`: the `v1-ch06` files plus the wiring
 
-   ```ts
-   export {
-     IssueSchema,
-     type Issue,
-     type StaleIssue,
-     staleIssues,
-   } from "./issues/stale.js";
-   ```
-
-3. Mount the route in `apps/api/src/app.ts` with
-   `app.route("/issues", staleIssuesRoute(issues))`, and load
-   `fixtures/issues.json` in `server.ts`, parsing it with
-   `z.array(IssueSchema)`. This follows the same pattern as
-   `RELAY_DOCS_DIR` in `apps/api/src/config.ts`.
-
-With the solution copied, `pnpm spec:check docs/specs/stale-issues.md`
-lists AC-1 to AC-7 as `ok`. Changing `>=` to `>` in the age check makes the
-AC-3 test fail.
+With the solution in place, `pnpm spec:check docs/specs/stale-issues.md`
+lists AC-1 to AC-8 as `ok`, and `pnpm format:check` passes. Changing `>=` to
+`>` in the age check makes the AC-3 test fail.

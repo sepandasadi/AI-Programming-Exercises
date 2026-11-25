@@ -1,3 +1,4 @@
+// spec: stale-issues
 import { describe, expect, it } from "vitest";
 import type { Issue } from "@relay/core";
 import { staleIssuesRoute } from "./stale-issues.js";
@@ -21,12 +22,13 @@ describe("GET /stale", () => {
     expect((await res.json()).days).toBe(14);
   });
 
-  it.each(["0", "366", "1.5", "abc"])(
+  it.each(["0", "366", "1.5", "abc", "1e1", "0x10", "+5"])(
     "AC-5: rejects days=%s with 400",
     async (days) => {
       const res = await app.request(`/stale?days=${days}`);
       expect(res.status).toBe(400);
-      expect(await res.json()).toHaveProperty("error");
+      const body = await res.json();
+      expect(typeof body.error).toBe("string");
     },
   );
 

@@ -35,13 +35,16 @@ whole days (24-hour periods).
   stale; one updated a second later is not.
 - AC-4: Results are ordered by `updatedAt` ascending, then
   `id` ascending.
-- AC-5: `days` defaults to 14; values that are not
-  integers from 1 to 365 return 400 with
+- AC-5: `days` defaults to 14. It must be written as
+  plain digits for an integer from 1 to 365; anything else
+  (`0`, `366`, `1.5`, `1e1`, `0x10`) returns 400 with
   `{ "error": string }`.
 - AC-6: Each result has `id`, `title`, `updatedAt` (ISO
   8601) and `daysStale` (whole days, rounded down).
 - AC-7: When nothing is stale the response is 200 with
   `issues: []`.
+- AC-8: An invalid issue file stops the server at startup
+  with an error that names the file.
 
 ## Interface
 
@@ -78,8 +81,6 @@ GET /issues/stale?days=30
 - No new runtime dependencies.
 - `staleIssues` is pure: the caller passes `now`, so tests
   never depend on the clock.
-- The issue file is validated with Zod at startup; an
-  invalid file stops the server with a clear message.
 
 ## Verification
 

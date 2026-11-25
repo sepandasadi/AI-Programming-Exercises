@@ -46,6 +46,7 @@ Answers are at the end.
    contains a wrong decision; redirecting leaves it there. Then
    restart the task, and add the ruled-out dependency to the spec's
    non-goals if it is missing.
-10. That every acceptance criterion ID appears in at least one test
-    file. It does not check that the test actually tests the
-    criterion; that is a review job (Ch. 7).
+10. That every acceptance criterion has at least one test titled
+    `AC-n: ...` in a test file tagged for that spec. It does not check
+    that the test actually tests the criterion; that is a review job
+    (Ch. 7).
