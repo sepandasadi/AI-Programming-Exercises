@@ -1,0 +1,16 @@
+{
+  "Stop": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node",
+          "args": [
+            "${CLAUDE_PROJECT_DIR}/scripts/hooks/typecheck-on-stop.mjs"
+          ],
+          "timeout": 180
+        }
+      ]
+    }
+  ]
+}
