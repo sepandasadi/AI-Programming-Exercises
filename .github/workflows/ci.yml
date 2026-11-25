@@ -25,3 +25,17 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Spec check (every AC has a test)
+        run: |
+          shopt -s nullglob
+          specs=(docs/specs/*.md)
+          if [ ${#specs[@]} -eq 0 ]; then
+            echo "No specs in docs/specs/"
+            exit 0
+          fi
+          status=0
+          for spec in "${specs[@]}"; do
+            echo "== $spec"
+            pnpm --silent spec:check "$spec" || status=1
+          done
+          exit $status
