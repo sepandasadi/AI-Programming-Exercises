@@ -7,7 +7,11 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 
 /** The spec, read literally: walk the clock a minute at a time. */
-function model(start: Date, minutes: number): Date {
+function model(
+  start: Date,
+  minutes: number,
+  holidays: readonly string[] = [],
+): Date {
   let t = start.getTime();
   let left = minutes;
   while (left > 0) {
@@ -15,7 +19,17 @@ function model(start: Date, minutes: number): Date {
     const weekday =
       d.getUTCDay() >= 1 && d.getUTCDay() <= 5;
     const hour = d.getUTCHours();
-    if (weekday && hour >= 9 && hour < 17) left--;
+    if (
+      weekday &&
+      hour >= 9 &&
+      hour < 17 &&
+      !(
+        holidays.length > 0 &&
+        holidays.includes(d.toISOString().slice(0, 10))
+      )
+    ) {
+      left--;
+    }
     t += MINUTE;
   }
   return new Date(t);
@@ -60,6 +74,30 @@ describe("addBusinessTime properties", () => {
         },
       ),
       { numRuns: 1000 },
+    );
+  });
+
+  it("with holidays, agrees with a minute-by-minute model", () => {
+    const DAY = 24 * HOUR;
+    fc.assert(
+      fc.property(
+        minuteInstant,
+        fc.integer({ min: 1, max: 100 * 60 }),
+        fc.array(fc.integer({ min: -2, max: 30 }), {
+          maxLength: 8,
+        }),
+        (start, minutes, offsets) => {
+          const holidays = offsets.map((n) =>
+            new Date(start.getTime() + n * DAY)
+              .toISOString()
+              .slice(0, 10),
+          );
+          expect(
+            addBusinessTime(start, minutes * MINUTE, holidays),
+          ).toEqual(model(start, minutes, holidays));
+        },
+      ),
+      { numRuns: 200 },
     );
   });
 
