@@ -241,4 +241,46 @@ describe("searchDocs", () => {
       ).toThrow(RangeError);
     }
   });
+
+  // Counterexamples found by search.property.test.ts (Ch. 7),
+  // pinned so they run every time.
+  describe("AC-1: case-insensitive across Unicode forms", () => {
+    const find = (body: string, q: string) =>
+      searchDocs(
+        [{ path: "a.md", heading: "h", line: 1, body }],
+        q,
+        5,
+      ).length;
+
+    it("AC-1: the two-character minimum counts folded text", () => {
+      // Found in review: a decomposed é passed the minimum
+      // and a composed one did not.
+      expect(find("caf e\u0301 x", "\u00e9")).toBe(0);
+      expect(find("caf e\u0301 x", "e\u0301")).toBe(0);
+      expect(find("\ufb00", "ff")).toBe(1);
+      expect(find("ff", "\ufb00")).toBe(1);
+    });
+
+    it("AC-1: a word with combining marks is one term", () => {
+      // "Việt" typed with combining marks, searched composed.
+      expect(
+        find("Vie\u0323\u0302t Nam", "Vi\u1ec7t"),
+      ).toBe(1);
+    });
+
+    it("AC-1: upper case that adds combining marks", () => {
+      const word = "\u1f52\u3400";
+      expect(find(word, word.toUpperCase())).toBe(1);
+    });
+
+    it("AC-1: a compatibility character in NFC form", () => {
+      const word = "\u3021\uf900";
+      expect(find(word, word.normalize("NFC"))).toBe(1);
+    });
+
+    it("AC-1: a Hangul syllable in NFD form", () => {
+      const word = "\uac00\u3400";
+      expect(find(word, word.normalize("NFD"))).toBe(1);
+    });
+  });
 });

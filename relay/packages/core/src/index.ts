@@ -19,10 +19,18 @@ export type {
 } from "./search-types.js";
 export { SearchResultSchema } from "./search-types.js";
 export type { Token } from "./terms.js";
-export { queryTerms, tokenize } from "./terms.js";
+export { foldCase, queryTerms, tokenize } from "./terms.js";
 export { parseSections } from "./sections.js";
 export { searchDocs } from "./search.js";
 export { MAX_DOC_BYTES, loadDocs } from "./load-docs.js";
+export { addBusinessTime } from "./business-time.js";
+export type { Issue, Priority, Triage } from "./triage.js";
+export { PRIORITIES, triageIssue } from "./triage.js";
+export {
+  IssueSchema,
+  MAX_LABELS,
+  MAX_TITLE_LENGTH,
+} from "./issue-schema.js";
 export type { SearchParams } from "./search-schema.js";
 export {
   DEFAULT_LIMIT,

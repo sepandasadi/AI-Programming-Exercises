@@ -1,0 +1,10 @@
+{
+  "number": 413,
+  "title": "Customer data visible to other tenants",
+  "body": null,
+  "labels": [
+    { "name": "Priority:P0" },
+    { "name": "security" }
+  ],
+  "created_at": "2026-11-28T23:45:00+01:00"
+}

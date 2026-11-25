@@ -6,21 +6,23 @@ export type Token = {
 };
 
 const MIN_TERM_LENGTH = 2;
-const TERM_RUN = /[\p{L}\p{N}]+/gu;
+const TERM_RUN = /[\p{L}\p{N}][\p{L}\p{M}\p{N}]*/gu;
 
 /**
- * Splits text into terms: lowercase runs of letters or digits, at least
- * two characters (code points) long. Offsets point into `text`, so
+ * Splits text into terms: runs of letters, digits and combining marks,
+ * case-folded by `foldCase` and at least two characters (code points)
+ * long after folding. Offsets point into `text`, so
  * `text.slice(start, end)` is the original spelling of the term.
  */
 export function tokenize(text: string): Token[] {
   const tokens: Token[] = [];
   for (const match of text.matchAll(TERM_RUN)) {
     const raw = match[0];
-    if ([...raw].length < MIN_TERM_LENGTH) continue;
+    const term = foldCase(raw);
+    if ([...term].length < MIN_TERM_LENGTH) continue;
     const start = match.index;
     tokens.push({
-      term: raw.toLowerCase(),
+      term,
       start,
       end: start + raw.length,
     });
@@ -32,3 +34,29 @@ export function tokenize(text: string): Token[] {
 export function queryTerms(query: string): string[] {
   return [...new Set(tokenize(query).map((t) => t.term))];
 }
+
+/**
+ * Unicode case folding for matching: compatibility-normalize, then lower-,
+ * upper- and lower-case again (so "ẞ", "ß", "SS" and "ss" all agree), then
+ * normalize again, since lower-casing can leave decomposed sequences ("İ"
+ * becomes "i̇"). Folding twice gives the same result as folding once.
+ */
+export function foldCase(text: string): string {
+  // Fast path: for ASCII the full fold equals toLowerCase(), and most
+  // docs are ASCII. The full fold made search over 1,000 sections miss
+  // the spec's 50 ms budget on CI.
+  if (ASCII.test(text)) return text.toLowerCase();
+  return fullFold(text);
+}
+
+/** The full fold, without the ASCII fast path. Exported for tests. */
+export function fullFold(text: string): string {
+  return text
+    .normalize("NFKC")
+    .toLowerCase()
+    .toUpperCase()
+    .toLowerCase()
+    .normalize("NFKC");
+}
+
+const ASCII = /^[\x00-\x7f]*$/;
