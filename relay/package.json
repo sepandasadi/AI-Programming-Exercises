@@ -10,7 +10,8 @@
     "spec:check": "tsx scripts/check-spec.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "review:flags": "bash scripts/review-flags.sh"
+    "review:flags": "bash scripts/review-flags.sh",
+    "mutate": "pnpm --filter @relay/core mutate"
   },
   "packageManager": "pnpm@12.4.1",
   "engines": {

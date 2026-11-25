@@ -29,6 +29,7 @@ describe("docs search properties", () => {
         fc.property(body, fc.nat(), (text, pick) => {
           const terms = tokenize(text);
           fc.pre(terms.length > 0);
+          // fc.pre above guarantees terms is not empty.
           const t = terms[pick % terms.length]!;
           const query = variant(text.slice(t.start, t.end));
           const sections = [

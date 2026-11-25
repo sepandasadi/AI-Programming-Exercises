@@ -7,7 +7,7 @@ base="$(git merge-base "${1:-main}" HEAD)"
 git diff "$base" --unified=0 -- '*.ts' '*.tsx' '*.js' '*.mjs' |
   grep -E '^(\+\+\+ |\+[^+])' |
   grep -E -e '^\+\+\+ ' \
-    -e '\bas [A-Z]\w*|as unknown|: any\b|<any>|!\.' \
+    -e '\bas [A-Z]\w*|as unknown|: any\b|<any>|[])\w]!([^=]|$)' \
     -e '@ts-(ignore|expect-error|nocheck)|eslint-disable' \
     -e '\.(skip|only|todo)\(|toMatchSnapshot' \
     -e 'catch *(\(\w*\))? *\{ *\}|\?\? *(0|""|\[\])' \
