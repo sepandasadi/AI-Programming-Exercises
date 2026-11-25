@@ -159,6 +159,15 @@ describe("addBusinessTime", () => {
     }
   });
 
+  it("rejects an invalid start and a result Date cannot hold", () => {
+    expect(() =>
+      addBusinessTime(new Date("not a date"), HOUR),
+    ).toThrow(RangeError);
+    expect(() =>
+      addBusinessTime(new Date("2026-11-23T09:00Z"), 1e300),
+    ).toThrow(RangeError);
+  });
+
   it("does not mutate the start date", () => {
     const start = new Date("2026-11-27T16:30:00.000Z");
     addBusinessTime(start, 4 * HOUR);

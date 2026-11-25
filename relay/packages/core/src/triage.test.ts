@@ -80,6 +80,7 @@ describe("triageIssue: priority rules", () => {
           "priority:p4",
           "priority: p1",
           "priority:p1x",
+          "not-priority:p1",
         ],
       }),
     ).toEqual({ priority: "P3", reason: "default" });
