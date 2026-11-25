@@ -34,13 +34,15 @@ export function queryTerms(query: string): string[] {
 }
 
 /**
- * Unicode case folding for matching: compatibility-normalize, then upper-
- * and lower-case (so "ß", "SS" and "ss" agree), then normalize again,
- * since lower-casing can leave decomposed sequences ("İ" becomes "i̇").
+ * Unicode case folding for matching: compatibility-normalize, then lower-,
+ * upper- and lower-case again (so "ẞ", "ß", "SS" and "ss" all agree), then
+ * normalize again, since lower-casing can leave decomposed sequences ("İ"
+ * becomes "i̇"). Folding twice gives the same result as folding once.
  */
 export function foldCase(text: string): string {
   return text
     .normalize("NFKC")
+    .toLowerCase()
     .toUpperCase()
     .toLowerCase()
     .normalize("NFKC");

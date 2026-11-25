@@ -2,7 +2,7 @@
 import fc from "fast-check";
 import { describe, it } from "vitest";
 import { searchDocs } from "./search.js";
-import { tokenize } from "./terms.js";
+import { foldCase, tokenize } from "./terms.js";
 
 /** Full Unicode, no hand-picked values. */
 const word = fc.string({
@@ -47,4 +47,18 @@ describe("docs search properties", () => {
       );
     });
   }
+
+  it("AC-1: folding is stable under folding and case changes", () => {
+    fc.assert(
+      fc.property(word, (w) => {
+        const f = foldCase(w);
+        return (
+          foldCase(f) === f &&
+          foldCase(w.toUpperCase()) === f &&
+          foldCase(w.toLowerCase()) === f
+        );
+      }),
+      { numRuns: 20000 },
+    );
+  });
 });
