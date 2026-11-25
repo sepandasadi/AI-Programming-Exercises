@@ -87,13 +87,24 @@ function decide(
   return { priority: "P3", reason: "default" };
 }
 
+export type TriageOptions = {
+  /** Team holidays, `YYYY-MM-DD` (UTC); the business clock skips them. */
+  holidays?: readonly string[];
+};
+
 /**
  * Gives an issue a priority, the rule that decided it and a respond-by
- * time. Pure: depends only on the issue. See docs/specs/issue-triage.md.
+ * time. Pure: depends only on its arguments. See
+ * docs/specs/issue-triage.md and docs/specs/triage-holidays.md (holidays
+ * affect the business clock only, not P0's calendar clock).
  *
- * Throws a RangeError if `issue.createdAt` is an invalid Date.
+ * Throws a RangeError if `issue.createdAt` is an invalid Date or a
+ * holiday is not a `YYYY-MM-DD` date.
  */
-export function triageIssue(issue: Issue): Triage {
+export function triageIssue(
+  issue: Issue,
+  { holidays = [] }: TriageOptions = {},
+): Triage {
   const start = issue.createdAt.getTime();
   if (Number.isNaN(start)) {
     throw new RangeError(
@@ -109,7 +120,7 @@ export function triageIssue(issue: Issue): Triage {
   const respondBy =
     sla.clock === "calendar"
       ? new Date(start + sla.ms)
-      : addBusinessTime(issue.createdAt, sla.ms);
+      : addBusinessTime(issue.createdAt, sla.ms, holidays);
 
   return {
     number: issue.number,

@@ -24,7 +24,16 @@ export { parseSections } from "./sections.js";
 export { searchDocs } from "./search.js";
 export { MAX_DOC_BYTES, loadDocs } from "./load-docs.js";
 export { addBusinessTime } from "./business-time.js";
-export type { Issue, Priority, Triage } from "./triage.js";
+export {
+  HolidayListSchema,
+  isHolidayDate,
+} from "./holidays.js";
+export type {
+  Issue,
+  Priority,
+  Triage,
+  TriageOptions,
+} from "./triage.js";
 export { PRIORITIES, triageIssue } from "./triage.js";
 export {
   IssueSchema,

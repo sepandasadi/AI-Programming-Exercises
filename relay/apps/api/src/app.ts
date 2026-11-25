@@ -11,10 +11,13 @@ import {
 export type AppOptions = {
   /** Parsed docs to search; loaded once at startup. */
   sections?: readonly DocSection[];
+  /** Team holidays (`YYYY-MM-DD`, UTC) for respond-by; read at startup. */
+  holidays?: readonly string[];
 };
 
 export function createApp({
   sections = [],
+  holidays = [],
 }: AppOptions = {}): Hono {
   const app = new Hono();
 
@@ -57,6 +60,7 @@ export function createApp({
     }
     const { respondBy, ...triage } = triageIssue(
       parsed.data,
+      { holidays },
     );
     return c.json({
       ...triage,

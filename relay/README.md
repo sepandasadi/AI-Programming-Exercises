@@ -29,5 +29,16 @@ RELAY_DOCS_DIR=/path/to/your/docs pnpm dev
 spec has a test titled `AC-n: ...` in a test file tagged `// spec: <name>`. It checks
 names, not what the tests assert. CI runs it for every spec in `docs/specs/`.
 
+## Issue triage
+
+`POST /triage` gives an issue a priority and a respond-by time (spec:
+`docs/specs/issue-triage.md`). To skip team holidays on the business clock, set
+`RELAY_HOLIDAYS` to comma-separated `YYYY-MM-DD` dates in UTC (spec:
+`docs/specs/triage-holidays.md`); an invalid date stops the API at startup.
+
+```sh
+RELAY_HOLIDAYS=2026-12-24,2026-12-25 pnpm dev
+```
+
 Environment variables can go in `relay/.env` (see `.env.example`); `pnpm dev` and
 `pnpm start` load it.
