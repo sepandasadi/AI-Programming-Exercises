@@ -1,0 +1,9 @@
+{
+  "number": 412,
+  "title": "Checkout outage after deploy",
+  "body": "Payments return 502 since the 16:20 deploy.",
+  "labels": [{ "name": "area:payments" }],
+  "created_at": "2026-11-27T16:30:00Z",
+  "user": { "login": "dana" },
+  "state": "open"
+}
