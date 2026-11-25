@@ -107,6 +107,11 @@ describe("foldCase", () => {
   it("AC-1: folds case, compatibility forms and composition", () => {
     expect(foldCase("STRASSE")).toBe(foldCase("Straße"));
     expect(foldCase("ﬀ")).toBe("ff");
+    // Counterexamples found by search.property.test.ts:
+    expect(foldCase("ẞⰀ".toLowerCase())).toBe(
+      foldCase("ẞⰀ"),
+    );
+    expect(foldCase("가".normalize("NFD"))).toBe("가");
     expect(foldCase("Việt")).toBe(foldCase("Việt"));
   });
 });
