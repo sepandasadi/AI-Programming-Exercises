@@ -5,11 +5,19 @@
   "scripts": {
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test",
-    "dev": "pnpm --filter @relay/api dev"
+    "test": "pnpm -r test && vitest run scripts",
+    "dev": "pnpm --filter @relay/api dev",
+    "spec:check": "tsx scripts/check-spec.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "packageManager": "pnpm@12.4.1",
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "prettier": "^3.10.1",
+    "tsx": "^4.23.15",
+    "vitest": "^5.1.1"
   }
 }
