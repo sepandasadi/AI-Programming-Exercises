@@ -26,6 +26,7 @@ jobs:
       - run: pnpm build
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm agents:check
       - name: Spec check (every AC has a test)
         run: |
           shopt -s nullglob

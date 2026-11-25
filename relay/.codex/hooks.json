@@ -1,0 +1,27 @@
+{
+  "description": "Relay's agent hooks; run Codex from relay/.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/hooks/protect-env.mjs"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/hooks/format-edited.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}

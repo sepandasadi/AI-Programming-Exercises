@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "review:flags": "bash scripts/review-flags.sh",
-    "mutate": "pnpm --filter @relay/core mutate"
+    "mutate": "pnpm --filter @relay/core mutate",
+    "agents:check": "tsx scripts/check-agent-config.ts"
   },
   "packageManager": "pnpm@12.4.1",
   "engines": {

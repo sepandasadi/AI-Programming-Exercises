@@ -1,0 +1,4 @@
+# Codex reads this; Claude Code reads disable-model-invocation
+# in SKILL.md. Both say: only a person starts this skill.
+policy:
+  allow_implicit_invocation: false
