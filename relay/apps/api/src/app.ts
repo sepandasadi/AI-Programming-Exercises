@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import {
   type DocSection,
   IssueSchema,
@@ -7,6 +8,9 @@ import {
   searchDocs,
   triageIssue,
 } from "@relay/core";
+
+/** Largest `POST /triage` body accepted (spec: Constraints). */
+export const MAX_TRIAGE_BODY_BYTES = 256 * 1024;
 
 export type AppOptions = {
   /** Parsed docs to search; loaded once at startup. */
@@ -38,31 +42,42 @@ export function createApp({
     });
   });
 
-  app.post("/triage", async (c) => {
-    let payload: unknown;
-    try {
-      payload = await c.req.json();
-    } catch {
-      return c.json(
-        { error: "body must be valid JSON" },
-        400,
+  app.post(
+    "/triage",
+    bodyLimit({
+      maxSize: MAX_TRIAGE_BODY_BYTES,
+      onError: (c) =>
+        c.json(
+          { error: "body must be at most 256 KB" },
+          413,
+        ),
+    }),
+    async (c) => {
+      let payload: unknown;
+      try {
+        payload = await c.req.json();
+      } catch {
+        return c.json(
+          { error: "body must be valid JSON" },
+          400,
+        );
+      }
+      const parsed = IssueSchema.safeParse(payload);
+      if (!parsed.success) {
+        const error = parsed.error.issues
+          .map((issue) => issue.message)
+          .join("; ");
+        return c.json({ error }, 400);
+      }
+      const { respondBy, ...triage } = triageIssue(
+        parsed.data,
       );
-    }
-    const parsed = IssueSchema.safeParse(payload);
-    if (!parsed.success) {
-      const error = parsed.error.issues
-        .map((issue) => issue.message)
-        .join("; ");
-      return c.json({ error }, 400);
-    }
-    const { respondBy, ...triage } = triageIssue(
-      parsed.data,
-    );
-    return c.json({
-      ...triage,
-      respondBy: respondBy.toISOString(),
-    });
-  });
+      return c.json({
+        ...triage,
+        respondBy: respondBy.toISOString(),
+      });
+    },
+  );
 
   return app;
 }

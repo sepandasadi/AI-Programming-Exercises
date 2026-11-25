@@ -135,6 +135,8 @@ of at most 100 strings or `{ name: string }`), `created_at`
 - No new runtime dependencies.
 - Core stays pure: no `Date.now()`, no I/O. The route
   validates with Zod and calls core.
+- A request body over 256 KB is rejected with 413 and
+  `{ "error": string }` before it is parsed.
 
 ## Verification
 

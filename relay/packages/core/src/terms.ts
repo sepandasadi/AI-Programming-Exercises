@@ -10,17 +10,19 @@ const TERM_RUN = /[\p{L}\p{N}][\p{L}\p{M}\p{N}]*/gu;
 
 /**
  * Splits text into terms: runs of letters, digits and combining marks,
- * at least two characters (code points) long, case-folded by `foldCase`. Offsets point into `text`, so
+ * case-folded by `foldCase` and at least two characters (code points)
+ * long after folding. Offsets point into `text`, so
  * `text.slice(start, end)` is the original spelling of the term.
  */
 export function tokenize(text: string): Token[] {
   const tokens: Token[] = [];
   for (const match of text.matchAll(TERM_RUN)) {
     const raw = match[0];
-    if ([...raw].length < MIN_TERM_LENGTH) continue;
+    const term = foldCase(raw);
+    if ([...term].length < MIN_TERM_LENGTH) continue;
     const start = match.index;
     tokens.push({
-      term: foldCase(raw),
+      term,
       start,
       end: start + raw.length,
     });

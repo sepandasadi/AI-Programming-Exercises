@@ -252,6 +252,15 @@ describe("searchDocs", () => {
         5,
       ).length;
 
+    it("AC-1: the two-character minimum counts folded text", () => {
+      // Found in review: a decomposed é passed the minimum
+      // and a composed one did not.
+      expect(find("caf e\u0301 x", "\u00e9")).toBe(0);
+      expect(find("caf e\u0301 x", "e\u0301")).toBe(0);
+      expect(find("\ufb00", "ff")).toBe(1);
+      expect(find("ff", "\ufb00")).toBe(1);
+    });
+
     it("AC-1: a word with combining marks is one term", () => {
       // "Việt" typed with combining marks, searched composed.
       expect(

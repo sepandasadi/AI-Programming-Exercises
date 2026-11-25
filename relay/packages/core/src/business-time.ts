@@ -8,13 +8,21 @@ const CLOSE = 17 * HOUR; // 17:00 UTC, exclusive
 const BUSINESS_DAY = CLOSE - OPEN; // 8 hours
 const BUSINESS_WEEK = 5 * BUSINESS_DAY; // 40 hours
 
+/** The largest epoch ms a Date can hold. */
+const MAX_TIME = 8.64e15;
+
 /** UTC midnight of the day containing `t` (epoch ms). */
 const dayStart = (t: number): number =>
   Math.floor(t / DAY) * DAY;
 
-/** Monday to Friday, in UTC. */
+/**
+ * Monday to Friday, in UTC. Computed from the day number rather than
+ * `new Date(t).getUTCDay()`, which is NaN past the Date range and made
+ * the search for the next weekday loop forever.
+ */
 const isBusinessDay = (t: number): boolean => {
-  const d = new Date(t).getUTCDay(); // 0 = Sunday ... 6 = Saturday
+  // Day 0, 1970-01-01, was a Thursday; 0 = Sunday ... 6 = Saturday.
+  const d = (((Math.floor(t / DAY) + 4) % 7) + 7) % 7;
   return d >= 1 && d <= 5;
 };
 
@@ -77,8 +85,12 @@ export function addBusinessTime(
   cursor += weeks * WEEK;
   remaining -= weeks * BUSINESS_WEEK;
 
-  // At most one week of windows remains.
+  // At most one week of windows remains. The cursor only moves forward,
+  // so once it passes the last valid Date the result can't be in range:
+  // stop before a huge (or infinite) cursor can stall the walk. No window
+  // straddles MAX_TIME (a midnight), so a result never crosses it later.
   for (;;) {
+    if (cursor > MAX_TIME) throw outOfRange();
     const close = dayStart(cursor) + CLOSE;
     const available = close - cursor;
     if (remaining <= available) {
@@ -89,11 +101,11 @@ export function addBusinessTime(
     cursor = nextBusinessInstant(close);
   }
 
-  const result = new Date(cursor);
-  if (Number.isNaN(result.getTime())) {
-    throw new RangeError(
-      "addBusinessTime: result is outside the range of Date",
-    );
-  }
-  return result;
+  return new Date(cursor);
+}
+
+function outOfRange(): RangeError {
+  return new RangeError(
+    "addBusinessTime: result is outside the range of Date",
+  );
 }

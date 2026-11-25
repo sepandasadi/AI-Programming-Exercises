@@ -25,6 +25,8 @@ describe("businessTimeBetween properties", () => {
   it("AC-1: splitting the span changes nothing", () => {
     fc.assert(
       fc.property(instant, instant, instant, (x, y, z) => {
+        // Sorting three dates keeps three dates; the cast tells
+        // noUncheckedIndexedAccess so.
         const [a, b, c] = [x, y, z].sort(
           (p, q) => p.getTime() - q.getTime(),
         ) as [Date, Date, Date];

@@ -213,4 +213,22 @@ describe("POST /triage", () => {
     );
     await ok(withField({ title: "a".repeat(256) }));
   });
+
+  it("rejects a body over 256 KB with 413 before parsing it", async () => {
+    const res = await app.request("/triage", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        number: 1,
+        title: "x",
+        labels: [],
+        created_at: "2026-11-27T16:30:00Z",
+        body: "x".repeat(256 * 1024),
+      }),
+    });
+    expect(res.status).toBe(413);
+    expect(await res.json()).toEqual({
+      error: expect.any(String),
+    });
+  });
 });

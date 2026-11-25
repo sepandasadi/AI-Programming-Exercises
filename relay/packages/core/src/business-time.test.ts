@@ -168,6 +168,43 @@ describe("addBusinessTime", () => {
     ).toThrow(RangeError);
   });
 
+  it("throws instead of hanging when the result is beyond the Date range", () => {
+    // Found in review: past 2^53 ms, adding a day no longer
+    // changes the float, and the loop never ended.
+    const start = new Date("2026-11-23T09:00:00.000Z");
+    for (const ms of [
+      1e16,
+      Number.MAX_SAFE_INTEGER,
+      1e20,
+      Number.MAX_VALUE,
+    ]) {
+      expect(() => addBusinessTime(start, ms)).toThrow(
+        RangeError,
+      );
+    }
+    expect(() =>
+      addBusinessTime(new Date(8.64e15 - HOUR), 2 * HOUR),
+    ).toThrow(RangeError);
+    // start + ms is in range, but the week skip overshoots it.
+    for (const ms of [3e15, 8e15]) {
+      expect(() => addBusinessTime(start, ms)).toThrow(
+        RangeError,
+      );
+    }
+    // The next opening is already past the last valid Date.
+    expect(() =>
+      addBusinessTime(new Date(8.64e15 - 2 * HOUR), HOUR),
+    ).toThrow(RangeError);
+  }, 2000);
+
+  it("handles very large amounts that stay in range", () => {
+    const start = new Date("2026-11-23T09:00:00.000Z");
+    const half = 5e14;
+    expect(addBusinessTime(start, 2 * half)).toEqual(
+      addBusinessTime(addBusinessTime(start, half), half),
+    );
+  });
+
   it("does not mutate the start date", () => {
     const start = new Date("2026-11-27T16:30:00.000Z");
     addBusinessTime(start, 4 * HOUR);
