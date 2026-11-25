@@ -5,8 +5,8 @@ The agent does one task per session; the human reruns the
 verification, reviews the diff and commits. Every test that covers
 a criterion is named `it("AC-n: ...")`.
 
-Drafted by a coding agent in planning mode, then reviewed. Review
-changes:
+Drafted by a coding agent in planning mode (the draft is in
+`docs-search.draft.md`), then reviewed. Review changes:
 
 - The decisions that change behavior (D1 whole-term matching, D2
   deduplicated terms, D3 headings, D4 whitespace preamble, D6 the
