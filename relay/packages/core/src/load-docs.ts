@@ -31,7 +31,7 @@ export async function loadDocs(
     .filter(
       (rel) =>
         rel !== "" &&
-        !rel.startsWith("..") &&
+        rel.split(sep)[0] !== ".." &&
         !isAbsolute(rel),
     )
     .map((rel) => rel.split(sep).join("/"))
@@ -110,9 +110,17 @@ async function readDoc(
   }
 }
 
-/** ELOOP: the path became a symlink (O_NOFOLLOW). ENOENT: it was removed. */
+/**
+ * ELOOP: the path became a symlink (O_NOFOLLOW). ENOENT: it
+ * was removed. EACCES/EPERM: unreadable, so skipped (spec).
+ */
 function isSkippableOpenError(error: unknown): boolean {
   const code = (error as NodeJS.ErrnoException | undefined)
     ?.code;
-  return code === "ELOOP" || code === "ENOENT";
+  return (
+    code === "ELOOP" ||
+    code === "ENOENT" ||
+    code === "EACCES" ||
+    code === "EPERM"
+  );
 }

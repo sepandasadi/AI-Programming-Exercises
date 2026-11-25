@@ -26,4 +26,8 @@ RELAY_DOCS_DIR=/path/to/your/docs pnpm dev
 ```
 
 `pnpm spec:check docs/specs/<name>.md` checks that every acceptance criterion in a
-spec has a test named after it. CI runs it for every spec in `docs/specs/`.
+spec has a test titled `AC-n: ...` in a test file tagged `// spec: <name>`. It checks
+names, not what the tests assert. CI runs it for every spec in `docs/specs/`.
+
+Environment variables can go in `relay/.env` (see `.env.example`); `pnpm dev` and
+`pnpm start` load it.

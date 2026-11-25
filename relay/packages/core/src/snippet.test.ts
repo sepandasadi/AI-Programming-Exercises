@@ -1,3 +1,4 @@
+// spec: docs-search
 import { describe, expect, it } from "vitest";
 import { makeSnippet, SNIPPET_LENGTH } from "./snippet.js";
 

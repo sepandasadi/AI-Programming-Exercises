@@ -1,3 +1,4 @@
+// spec: docs-search
 import { describe, expect, it } from "vitest";
 import { queryTerms, tokenize } from "./terms.js";
 

@@ -1,4 +1,6 @@
+// spec: docs-search
 import {
+  chmod,
   mkdir,
   mkdtemp,
   rm,
@@ -191,6 +193,27 @@ describe("loadDocs", () => {
       { path: "guide.md", heading: "Setup", line: 5 },
     ]);
   });
+
+  it("AC-9: reads files whose names start with two dots", async () => {
+    await put(root, "..notes.md", "# Notes\n");
+    await put(root, "..drafts/a.md", "# A\n");
+    const paths = (await loadDocs(root)).map((s) => s.path);
+    expect(paths).toEqual(["..drafts/a.md", "..notes.md"]);
+  });
+
+  it.skipIf(process.getuid?.() === 0)(
+    "AC-9: skips an unreadable file instead of failing",
+    async () => {
+      await put(root, "ok.md", "# Ok\n");
+      await put(root, "locked.md", "# Locked\n");
+      await chmod(join(root, "locked.md"), 0o000);
+      const paths = (await loadDocs(root)).map(
+        (s) => s.path,
+      );
+      await chmod(join(root, "locked.md"), 0o644);
+      expect(paths).toEqual(["ok.md"]);
+    },
+  );
 
   it("throws when the root does not exist", async () => {
     await expect(

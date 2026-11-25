@@ -43,12 +43,14 @@ Score = 3 x (heading occurrences) + (body occurrences),
 summed over all query terms.
 
 `limit` must be written as plain digits: `1e1` and `2.0`
-are rejected. "1 MB" means 1,048,576 bytes.
+are rejected. "1 MB" means 1,048,576 bytes. A file the
+server cannot read is skipped, not fatal.
 
 ## Acceptance criteria
 
 - AC-1: Search is case-insensitive and returns every
-  section that contains at least one query term.
+  section that contains at least one query term, up to
+  `limit` (AC-6).
 - AC-2: A section whose heading contains a term scores
   higher than one with the same term only in its body,
   as given by the score formula.

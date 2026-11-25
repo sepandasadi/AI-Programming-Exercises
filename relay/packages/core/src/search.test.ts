@@ -1,3 +1,4 @@
+// spec: docs-search
 import { describe, expect, it } from "vitest";
 import type { DocSection } from "./search-types.js";
 import { SearchResultSchema } from "./search-types.js";
