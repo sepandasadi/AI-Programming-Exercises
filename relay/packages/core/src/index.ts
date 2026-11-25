@@ -19,3 +19,4 @@ export type { Token } from "./terms.js";
 export { queryTerms, tokenize } from "./terms.js";
 export { parseSections } from "./sections.js";
 export { searchDocs } from "./search.js";
+export { MAX_DOC_BYTES, loadDocs } from "./load-docs.js";
