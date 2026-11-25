@@ -42,6 +42,15 @@ export function queryTerms(query: string): string[] {
  * becomes "i̇"). Folding twice gives the same result as folding once.
  */
 export function foldCase(text: string): string {
+  // Fast path: for ASCII the full fold equals toLowerCase(), and most
+  // docs are ASCII. The full fold made search over 1,000 sections miss
+  // the spec's 50 ms budget on CI.
+  if (ASCII.test(text)) return text.toLowerCase();
+  return fullFold(text);
+}
+
+/** The full fold, without the ASCII fast path. Exported for tests. */
+export function fullFold(text: string): string {
   return text
     .normalize("NFKC")
     .toLowerCase()
@@ -49,3 +58,5 @@ export function foldCase(text: string): string {
     .toLowerCase()
     .normalize("NFKC");
 }
+
+const ASCII = /^[\x00-\x7f]*$/;

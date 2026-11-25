@@ -2,7 +2,7 @@
 import fc from "fast-check";
 import { describe, it } from "vitest";
 import { searchDocs } from "./search.js";
-import { foldCase, tokenize } from "./terms.js";
+import { foldCase, fullFold, tokenize } from "./terms.js";
 
 /** Full Unicode, no hand-picked values. */
 const word = fc.string({
@@ -59,6 +59,16 @@ describe("docs search properties", () => {
           foldCase(w.toLowerCase()) === f
         );
       }),
+      { numRuns: 20000 },
+    );
+  });
+
+  it("AC-1: the ASCII fast path folds exactly like the full fold", () => {
+    fc.assert(
+      fc.property(
+        fc.oneof(fc.string({ unit: "binary-ascii" }), word),
+        (s) => foldCase(s) === fullFold(s),
+      ),
       { numRuns: 20000 },
     );
   });
