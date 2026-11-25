@@ -31,6 +31,12 @@ const SKIP = new Set(["node_modules", "dist", ".git"]);
 
 export type Finding = { file: string; problem: string };
 
+/** Lines in a file; a final newline doesn't start a line. */
+export function lineCount(text: string): number {
+  if (text === "") return 0;
+  return text.replace(/\n$/, "").split("\n").length;
+}
+
 /** Inline code spans in Markdown, outside fenced blocks. */
 export function codeSpans(markdown: string): string[] {
   const prose = markdown.replace(/^```[\s\S]*?^```/gm, "");
@@ -116,7 +122,7 @@ export function checkSkill(
       `description is ${description.length} characters ` +
         `(max ${MAX_DESCRIPTION})`,
     );
-  const lines = skillMd.split("\n").length;
+  const lines = lineCount(skillMd);
   if (lines > MAX_SKILL_LINES)
     problems.push(`SKILL.md is ${lines} lines (max 500)`);
   return problems;
@@ -172,13 +178,13 @@ export async function checkAgentConfig(
   );
   for (const file of instructions) {
     const text = (await read(file)) ?? "";
-    const lines = text.split("\n").length;
+    const lines = lineCount(text);
     if (lines > MAX_INSTRUCTION_LINES)
       add(
         file,
         `${lines} lines (max ${MAX_INSTRUCTION_LINES})`,
       );
-    for (const span of pathSpans(text)) {
+    for (const span of new Set(pathSpans(text))) {
       const bases = [dirname(file), root, dirname(root)];
       if (!bases.some((b) => existsSync(join(b, span))))
         add(

@@ -14,6 +14,7 @@ import {
   checkSkill,
   frontMatter,
   hookScripts,
+  lineCount,
   pathSpans,
   pnpmScripts,
 } from "./check-agent-config.js";
@@ -67,6 +68,14 @@ describe("parsing", () => {
         },
       }),
     ).toEqual(["scripts/hooks/x.mjs"]);
+  });
+});
+
+describe("lineCount", () => {
+  it("counts lines with and without a final newline", () => {
+    expect(lineCount("a\nb\n")).toBe(2);
+    expect(lineCount("a\nb")).toBe(2);
+    expect(lineCount("")).toBe(0);
   });
 });
 
@@ -139,6 +148,7 @@ describe("checkAgentConfig", () => {
       "src/app.ts": "",
       "AGENTS.md":
         "Code is in `src/app.ts` and `src/old.ts`.\n" +
+        "Again: `src/old.ts`.\n" +
         "Run `pnpm build` then `pnpm test:unit`.\n",
       "CLAUDE.md": "@AGENTS.md\n@docs/gone.md\n",
     });
@@ -166,7 +176,7 @@ describe("checkAgentConfig", () => {
       "AGENTS.md": "- a rule\n".repeat(80),
     });
     expect(await checkAgentConfig(root)).toEqual([
-      { file: "AGENTS.md", problem: "81 lines (max 60)" },
+      { file: "AGENTS.md", problem: "80 lines (max 60)" },
     ]);
   });
 
