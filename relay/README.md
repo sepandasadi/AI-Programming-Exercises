@@ -6,7 +6,7 @@ AI features and, in Vol. 2, Ch. 10, exposes it as an MCP server your own coding 
 | Package | What it does |
 | --- | --- |
 | `apps/api` | HTTP API (Hono on Node.js) |
-| `packages/core` | Domain logic (docs search) and Zod schemas |
+| `packages/core` | Domain logic (docs search, issue triage) and Zod schemas |
 
 A web UI (`apps/web`, Next.js) is added in the chapter that first needs it.
 
@@ -31,3 +31,29 @@ names, not what the tests assert. CI runs it for every spec in `docs/specs/`.
 
 Environment variables can go in `relay/.env` (see `.env.example`); `pnpm dev` and
 `pnpm start` load it.
+
+## Issue triage
+
+`POST /triage` takes a GitHub-style issue and returns its priority, the rule
+that decided it and a respond-by time in business hours (spec:
+`docs/specs/issue-triage.md`). Sample issues are in `fixtures/issues/`.
+
+```sh
+curl -s -X POST localhost:3000/triage \
+  -H 'content-type: application/json' \
+  -d @fixtures/issues/friday-outage.json
+```
+
+## Verification tools (Vol. 1, Ch. 7)
+
+- Property tests (`*.property.test.ts`, fast-check) run with `pnpm test`.
+- `pnpm --filter @relay/core mutate` runs Stryker on the files listed in
+  `packages/core/stryker.config.json`. Stryker's TypeScript checker does not
+  support TypeScript 7, so the config skips its tsconfig rewrite
+  (`tsconfigFile`) and names the Vitest runner plugin explicitly (`plugins`),
+  which pnpm's layout needs.
+- `pnpm review:flags [base]` lists added lines worth a second look (`as`, `!`,
+  `any`, `.skip`, empty `catch`, `?? 0`, hidden clocks). Run `git add -N .`
+  first to include new files.
+- `scripts/guard-tests.mjs` is a pre-edit hook that refuses edits to test files
+  (exit code 2). Set `RELAY_ALLOW_TEST_EDITS=1` in a test-writing session.
