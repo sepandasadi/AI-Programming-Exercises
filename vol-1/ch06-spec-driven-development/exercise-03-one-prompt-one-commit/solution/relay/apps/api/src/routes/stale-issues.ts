@@ -12,9 +12,14 @@ export function staleIssuesRoute(
 ): Hono {
   const app = new Hono();
   app.get("/stale", (c) => {
-    const q = Query.safeParse({ days: c.req.query("days") });
+    const q = Query.safeParse({
+      days: c.req.query("days"),
+    });
     if (!q.success) {
-      return c.json({ error: "days must be 1 to 365" }, 400);
+      return c.json(
+        { error: "days must be 1 to 365" },
+        400,
+      );
     }
     const { days } = q.data;
     return c.json({

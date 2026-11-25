@@ -27,7 +27,9 @@ export function staleIssues(
     .filter((i) => i.state === "open")
     .filter(
       (i) =>
-        !i.labels.some((l) => l.toLowerCase() === "on-hold"),
+        !i.labels.some(
+          (l) => l.toLowerCase() === "on-hold",
+        ),
     )
     .map((i) => ({
       issue: i,
