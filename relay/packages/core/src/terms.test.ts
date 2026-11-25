@@ -1,6 +1,6 @@
 // spec: docs-search
 import { describe, expect, it } from "vitest";
-import { queryTerms, tokenize } from "./terms.js";
+import { foldCase, queryTerms, tokenize } from "./terms.js";
 
 const terms = (text: string) =>
   tokenize(text).map((t) => t.term);
@@ -55,10 +55,10 @@ describe("tokenize", () => {
       "déploiement",
       "café",
       "über",
-      "größe",
+      "grösse",
     ]);
     for (const t of tokens) {
-      expect(text.slice(t.start, t.end).toLowerCase()).toBe(
+      expect(foldCase(text.slice(t.start, t.end))).toBe(
         t.term,
       );
     }
@@ -100,5 +100,13 @@ describe("queryTerms", () => {
       "relay",
       "ops",
     ]);
+  });
+});
+
+describe("foldCase", () => {
+  it("AC-1: folds case, compatibility forms and composition", () => {
+    expect(foldCase("STRASSE")).toBe(foldCase("Straße"));
+    expect(foldCase("ﬀ")).toBe("ff");
+    expect(foldCase("Việt")).toBe(foldCase("Việt"));
   });
 });

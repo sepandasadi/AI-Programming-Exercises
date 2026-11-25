@@ -6,11 +6,11 @@ export type Token = {
 };
 
 const MIN_TERM_LENGTH = 2;
-const TERM_RUN = /[\p{L}\p{N}]+/gu;
+const TERM_RUN = /[\p{L}\p{N}][\p{L}\p{M}\p{N}]*/gu;
 
 /**
- * Splits text into terms: lowercase runs of letters or digits, at least
- * two characters (code points) long. Offsets point into `text`, so
+ * Splits text into terms: runs of letters, digits and combining marks,
+ * at least two characters (code points) long, case-folded by `foldCase`. Offsets point into `text`, so
  * `text.slice(start, end)` is the original spelling of the term.
  */
 export function tokenize(text: string): Token[] {
@@ -20,7 +20,7 @@ export function tokenize(text: string): Token[] {
     if ([...raw].length < MIN_TERM_LENGTH) continue;
     const start = match.index;
     tokens.push({
-      term: raw.toLowerCase(),
+      term: foldCase(raw),
       start,
       end: start + raw.length,
     });
@@ -31,4 +31,17 @@ export function tokenize(text: string): Token[] {
 /** The distinct terms of a query, in the order they first appear. */
 export function queryTerms(query: string): string[] {
   return [...new Set(tokenize(query).map((t) => t.term))];
+}
+
+/**
+ * Unicode case folding for matching: compatibility-normalize, then upper-
+ * and lower-case (so "ß", "SS" and "ss" agree), then normalize again,
+ * since lower-casing can leave decomposed sequences ("İ" becomes "i̇").
+ */
+export function foldCase(text: string): string {
+  return text
+    .normalize("NFKC")
+    .toUpperCase()
+    .toLowerCase()
+    .normalize("NFKC");
 }

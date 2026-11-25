@@ -19,7 +19,7 @@ export type {
 } from "./search-types.js";
 export { SearchResultSchema } from "./search-types.js";
 export type { Token } from "./terms.js";
-export { queryTerms, tokenize } from "./terms.js";
+export { foldCase, queryTerms, tokenize } from "./terms.js";
 export { parseSections } from "./sections.js";
 export { searchDocs } from "./search.js";
 export { MAX_DOC_BYTES, loadDocs } from "./load-docs.js";

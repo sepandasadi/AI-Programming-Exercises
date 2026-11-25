@@ -33,8 +33,12 @@ Only ATX headings count (`# Title`), and lines inside
 fenced code blocks are never headings. A preamble that is
 only whitespace produces no section.
 
-A *term* is a lowercase run of letters or digits, at least
-two characters long. Matching is by whole term: the query
+A *term* is a run of letters, digits and combining marks
+that starts with a letter or digit, at least two characters
+(code points) long as written. Terms compare after Unicode
+case folding: NFKC normalization, then upper and lower
+case, then NFKC again. So `Straße` matches `STRASSE`, and
+the composed and decomposed forms of `Việt` match. Matching is by whole term: the query
 term `rollback` does not match `rollbacks`. Repeated
 query terms count once. A section matches when its heading
 or body contains at least one query term.
