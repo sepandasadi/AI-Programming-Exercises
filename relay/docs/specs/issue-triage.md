@@ -62,6 +62,9 @@ outside a window starts its clock at the next opening.
 started at `created_at`, has counted the full SLA. So a
 deadline that lands exactly on a closing time is that
 closing time (17:00), not the next opening.
+`addBusinessTime` takes a positive whole number of
+milliseconds; zero, negative or fractional amounts throw a
+`RangeError`.
 
 ## Acceptance criteria
 
