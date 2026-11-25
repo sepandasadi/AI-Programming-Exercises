@@ -9,8 +9,8 @@
 4. Codex and Claude Code combine directory-level instruction files
    differently. How, and what does that mean for a rule in
    `packages/core/AGENTS.md`?
-5. What is a canary instruction, and what does it prove that a tool's
-   list of loaded files doesn't?
+5. What does a canary tell you about whether an agent followed an
+   instruction? How can you check whether the tool loaded the file?
 6. What is progressive disclosure in a skill, and why does it make the
    description so important?
 7. Relay's `task` skill sets `disable-model-invocation: true` and also
@@ -41,10 +41,10 @@
    load a subdirectory's file only when the agent opens a file there. A
    rule in core's file is invisible to a Claude Code session that never
    touches core, and to a Codex session started outside core.
-5. A harmless, observable instruction (such as "end every reply with
-   `canary: api`") placed in one layer. Its appearance proves the model
-   received that layer for that task; a file list shows only what the
-   tool says it loaded.
+5. A harmless, observable instruction such as “end every reply with
+   `relay-api-canary`.” The marker in a reply shows the model followed the
+   instruction in that run. Use prompt inspection or the tool’s loaded
+   file list to check whether the directory layer was loaded.
 6. At startup the agent sees only each skill's name and description; it
    loads the body when a task matches and the skill's other files only
    if the body sends it there. The description is the only part the
@@ -55,11 +55,10 @@
    `policy.allow_implicit_invocation` in `agents/openai.yaml`. Unknown
    fields are skipped silently, so without the second file Codex offered
    `task` for implicit use.
-8. Exit 1 is a non-blocking error: the call goes ahead. `protect-env`
-   fails closed (unparseable input exits 2), and its wiring sets
-   `onFailure: "block"` so a timeout blocks too. Its absolute
-   `${CLAUDE_PROJECT_DIR}` path means a directory change can't make the
-   script vanish.
+8. By default, exit 1 lets the call go ahead. Relay’s `protect-env`
+   exits 2 when the input cannot be parsed. Its wiring also sets
+   `onFailure: "block"` so an exit 1 or a timeout blocks the call.
+   `${CLAUDE_PROJECT_DIR}` keeps the script path stable across directories.
 9. `/readonly` in the URL (no write tools, so no wrong comments or
    merges); `X-MCP-Toolsets: issues,pull_requests` (fewer tools, less
    context and less room to wander); `${GITHUB_MCP_TOKEN}` from the

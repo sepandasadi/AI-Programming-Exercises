@@ -32,13 +32,16 @@ loads.
 ## Verification
 
 - `pnpm agents:check` prints `ok      agent config`.
-- Canary: add the line ``- End every reply with the line `canary: api`.``
-  to `apps/api/AGENTS.md`, start a fresh session in `relay/`, and ask
-  the agent to summarize `resolveDocsRoot` in `apps/api/src/config.ts`.
-  A pass is a reply ending with `canary: api`. Then remove the canary.
-- Codex users can also run `codex debug prompt-input` from
-  `relay/apps/api` and find both files in the output (the project must
-  be trusted).
+- Add ``- End every reply with `relay-api-canary`.`` to the directory
+  file you edited. The steps below use `apps/api` as the example.
+- In Codex, run `codex debug prompt-input` from `relay/` and again from
+  `relay/apps/api/`. The marker should appear only in the second output.
+- In Claude Code, start in `relay/` and ask the agent to open
+  `apps/api/src/config.ts` with Read. Check the loaded files in `/memory`.
+- Ask for a summary of `resolveDocsRoot`. A reply ending in the marker
+  shows the model followed the instruction in that run. If it is missing,
+  inspect the loaded instructions before deciding why. Remove the
+  temporary line when finished.
 
 ## Solution
 

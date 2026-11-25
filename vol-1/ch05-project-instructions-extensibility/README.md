@@ -10,10 +10,10 @@ config built in the chapter: layered `AGENTS.md` files, skills in
 
 | Folder | Goal | Verification |
 | --- | --- | --- |
-| [exercise-01-trim-the-instructions](exercise-01-trim-the-instructions/) | Cut a 110-line `AGENTS.md` to what belongs | `pnpm agents:check` passes; a canary proves a directory layer loads |
+| [exercise-01-trim-the-instructions](exercise-01-trim-the-instructions/) | Cut a 110-line `AGENTS.md` to what belongs | `pnpm agents:check` passes; prompt or memory inspection shows the directory layer |
 | [exercise-02-command-and-skill](exercise-02-command-and-skill/) | Add `GET /sla` with `/task` and the `add-api-route` skill | `spec:check` passes; the smoke script prints the table and `HTTP 200` |
 | [exercise-03-stop-hook](exercise-03-stop-hook/) | Keep the agent working while `pnpm typecheck` fails, without a loop | The hook's tests pass, including `stop_hook_active` |
-| [exercise-04-read-only-mcp](exercise-04-read-only-mcp/) | Connect GitHub's MCP server read-only | The agent's issue list matches `gh`; a write request finds no tool |
+| [exercise-04-read-only-mcp](exercise-04-read-only-mcp/) | Connect GitHub's MCP server read-only | The MCP response matches `gh`; the server exposes only read tools |
 | [challenge](challenge/) | Grade the reviewer sub-agent on a change with planted bugs | Every finding reproduced or rejected; each planted problem found or missed |
 | [quiz.md](quiz.md) | Ten questions with answers | |
 

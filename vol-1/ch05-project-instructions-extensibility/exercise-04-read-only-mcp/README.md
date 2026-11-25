@@ -18,18 +18,18 @@ confirm it can't write.
    Approve it when asked (Claude Code asks once per project; Codex loads
    project config only in a trusted project). For another tool, write the
    equivalent entry from the Tool Lens sidebars in 5.8.
-4. Check what connected: `/mcp` in Claude Code or Codex, or
-   `claude mcp get github` / `codex mcp get github` from a shell.
+4. Use `/mcp` in Claude Code or Codex to inspect the connected server.
+   From a shell, `claude mcp get github` or `codex mcp get github`
+   checks the local configuration.
 
 ## Verification
 
 - Ask: "Using the GitHub MCP server, list the open issues in
   `<you>/AI-Programming-Exercises` with their numbers and titles." Then
   run `gh issue list --repo <you>/AI-Programming-Exercises --state open`.
-  A pass is an exact match.
-- Ask the agent to add a comment to one of those issues. A pass is a
-  reply that it has no tool to do that. A comment on the issue is a
-  fail: check that the URL ends in `/readonly`.
+  Confirm the MCP call in the trace, then compare the numbers and titles.
+- In `/mcp`, inspect the GitHub server’s tools. Check that it offers
+  issue reads and exposes no tool for commenting or other writes.
 - Remove `X-MCP-Toolsets` and restart: count the GitHub tools listed in
   `/mcp` before and after. Put the header back.
 
