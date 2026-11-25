@@ -23,6 +23,9 @@ export { queryTerms, tokenize } from "./terms.js";
 export { parseSections } from "./sections.js";
 export { searchDocs } from "./search.js";
 export { MAX_DOC_BYTES, loadDocs } from "./load-docs.js";
+export { addBusinessTime } from "./business-time.js";
+export type { Issue, Priority, Triage } from "./triage.js";
+export { PRIORITIES, triageIssue } from "./triage.js";
 export type { SearchParams } from "./search-schema.js";
 export {
   DEFAULT_LIMIT,
