@@ -168,6 +168,86 @@ describe("addBusinessTime", () => {
     ).toThrow(RangeError);
   });
 
+  describe("holidays", () => {
+    // 2026-11-26 is a Thursday, 2026-11-27 a Friday.
+    const addH = (
+      startIso: string,
+      ms: number,
+      holidays: string[],
+    ): string =>
+      addBusinessTime(
+        new Date(startIso),
+        ms,
+        holidays,
+      ).toISOString();
+
+    it("skips a holiday in the middle of the span", () => {
+      // Wed 10:00-17:00 (7h), Thu off, Fri 09:00-17:00 (8h), Mon 09:00-10:00.
+      expect(
+        addH("2026-11-25T10:00:00.000Z", 16 * HOUR, [
+          "2026-11-26",
+        ]),
+      ).toBe("2026-11-30T10:00:00.000Z");
+    });
+
+    it("a start on a holiday starts the clock at the next open day", () => {
+      expect(
+        addH("2026-11-26T07:30:00.000Z", 1 * HOUR, [
+          "2026-11-26",
+        ]),
+      ).toBe("2026-11-27T10:00:00.000Z");
+    });
+
+    it("a holiday Friday carries time over the weekend to Monday", () => {
+      expect(
+        addH("2026-11-26T16:00:00.000Z", 2 * HOUR, [
+          "2026-11-27",
+        ]),
+      ).toBe("2026-11-30T10:00:00.000Z");
+    });
+
+    it("a deadline at 17:00 before a holiday stays at 17:00", () => {
+      expect(
+        addH("2026-11-25T13:00:00.000Z", 4 * HOUR, [
+          "2026-11-26",
+        ]),
+      ).toBe("2026-11-25T17:00:00.000Z");
+    });
+
+    it("counts a holiday inside a span of several weeks", () => {
+      // 80h from Mon 09:00 is Fri 2026-12-04 17:00; one holiday adds a day.
+      expect(
+        addH("2026-11-23T09:00:00.000Z", 80 * HOUR, [
+          "2026-11-26",
+        ]),
+      ).toBe("2026-12-07T17:00:00.000Z");
+    });
+
+    it("ignores holidays on weekends and before the start", () => {
+      expect(
+        addH("2026-11-27T16:00:00.000Z", 2 * HOUR, [
+          "2026-11-28",
+          "2026-11-29",
+          "2026-11-24",
+        ]),
+      ).toBe(add("2026-11-27T16:00:00.000Z", 2 * HOUR));
+    });
+
+    it("rejects holidays that are not YYYY-MM-DD dates", () => {
+      const start = new Date("2026-11-23T09:00:00.000Z");
+      for (const h of [
+        "2026-02-30",
+        "2026-11-26T00:00:00Z",
+        "26-11-2026",
+        "",
+      ]) {
+        expect(() =>
+          addBusinessTime(start, HOUR, [h]),
+        ).toThrow(RangeError);
+      }
+    });
+  });
+
   it("throws instead of hanging when the result is beyond the Date range", () => {
     // Found in review: past 2^53 ms, adding a day no longer
     // changes the float, and the loop never ended.

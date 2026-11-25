@@ -26,11 +26,43 @@ const isBusinessDay = (t: number): boolean => {
   return d >= 1 && d <= 5;
 };
 
+const HOLIDAY_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Parses YYYY-MM-DD dates into the UTC midnights they name. Throws a
+ * RangeError for anything else, including impossible dates (2026-02-30).
+ */
+function parseHolidays(
+  holidays: readonly string[],
+): Set<number> {
+  const days = new Set<number>();
+  for (const h of holidays) {
+    const t = HOLIDAY_FORMAT.test(h)
+      ? Date.parse(`${h}T00:00:00.000Z`)
+      : Number.NaN;
+    if (
+      Number.isNaN(t) ||
+      new Date(t).toISOString().slice(0, 10) !== h
+    ) {
+      throw new RangeError(
+        `addBusinessTime: holiday must be a YYYY-MM-DD date, got ${JSON.stringify(h)}`,
+      );
+    }
+    days.add(t);
+  }
+  return days;
+}
+
 /**
  * Returns `t` if it is inside a business window, otherwise the next
- * opening (09:00 UTC on the next Monday to Friday).
+ * opening (09:00 UTC on the next Monday to Friday that is not a holiday).
  */
-function nextBusinessInstant(t: number): number {
+function nextBusinessInstant(
+  t: number,
+  holidays: ReadonlySet<number>,
+): number {
+  const isOpenDay = (day: number): boolean =>
+    isBusinessDay(day) && !holidays.has(day);
   const day = dayStart(t);
   const offset = t - day;
   if (
@@ -41,7 +73,7 @@ function nextBusinessInstant(t: number): number {
     return t;
   }
   let candidate = offset < OPEN ? day : day + DAY;
-  while (!isBusinessDay(candidate)) {
+  while (!isOpenDay(candidate)) {
     candidate += DAY;
   }
   return candidate + OPEN;
@@ -52,16 +84,22 @@ function nextBusinessInstant(t: number): number {
  * respond-by instant. Business time runs Monday to Friday, 09:00
  * (inclusive) to 17:00 (exclusive), UTC. See docs/specs/issue-triage.md.
  *
+ * `holidays` is an optional list of YYYY-MM-DD dates (UTC days) on which
+ * no business time is counted. Dates that fall on a weekend, or before
+ * `start`, have no effect.
+ *
  * The result is the earliest instant at which the clock has counted the
  * full amount, so a deadline that lands exactly on a closing time is that
  * closing time (17:00), not the next opening.
  *
  * Throws a RangeError if `ms` is not a positive whole number, if `start`
- * is an invalid Date, or if the result falls outside the Date range.
+ * is an invalid Date, if a holiday is not a valid YYYY-MM-DD date, or if
+ * the result falls outside the Date range.
  */
 export function addBusinessTime(
   start: Date,
   ms: number,
+  holidays: readonly string[] = [],
 ): Date {
   if (!Number.isInteger(ms) || ms <= 0) {
     throw new RangeError(
@@ -75,22 +113,33 @@ export function addBusinessTime(
     );
   }
 
-  let cursor = nextBusinessInstant(startMs);
+  const closed = parseHolidays(holidays);
+  const lastHoliday = [...closed].reduce(
+    (a, b) => Math.max(a, b),
+    -Infinity,
+  );
+
+  let cursor = nextBusinessInstant(startMs, closed);
   let remaining = ms;
 
-  // From any instant inside a window, 40 business hours later is the same
-  // weekday and time one calendar week later. Skip whole weeks, but always
-  // leave at least 1 ms so the loop below applies the closing-time rule.
-  const weeks = Math.floor((remaining - 1) / BUSINESS_WEEK);
-  cursor += weeks * WEEK;
-  remaining -= weeks * BUSINESS_WEEK;
-
-  // At most one week of windows remains. The cursor only moves forward,
-  // so once it passes the last valid Date the result can't be in range:
-  // stop before a huge (or infinite) cursor can stall the walk. No window
-  // straddles MAX_TIME (a midnight), so a result never crosses it later.
   for (;;) {
+    // From any instant inside a window, 40 business hours later is the
+    // same weekday and time one calendar week later, provided no holiday
+    // lies in between. So once the cursor is past the last holiday, skip
+    // whole weeks, but always leave at least 1 ms so the code below
+    // applies the closing-time rule. Until then, walk day by day.
+    if (dayStart(cursor) > lastHoliday) {
+      const weeks = Math.floor(
+        (remaining - 1) / BUSINESS_WEEK,
+      );
+      cursor += weeks * WEEK;
+      remaining -= weeks * BUSINESS_WEEK;
+    }
+    // The cursor only moves forward, so once it passes the last valid
+    // Date the result can't be in range: stop before a huge (or
+    // infinite) cursor can stall the walk.
     if (cursor > MAX_TIME) throw outOfRange();
+
     const close = dayStart(cursor) + CLOSE;
     const available = close - cursor;
     if (remaining <= available) {
@@ -98,7 +147,7 @@ export function addBusinessTime(
       break;
     }
     remaining -= available;
-    cursor = nextBusinessInstant(close);
+    cursor = nextBusinessInstant(close, closed);
   }
 
   return new Date(cursor);
