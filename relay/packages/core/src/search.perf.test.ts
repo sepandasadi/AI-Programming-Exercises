@@ -15,17 +15,56 @@ function seeded(seed: number): () => number {
 }
 
 const VOCABULARY = [
-  "deploy", "rollback", "incident", "release", "service", "database", "migration",
-  "alert", "pager", "runbook", "cluster", "config", "secret", "token", "cache",
-  "queue", "worker", "latency", "error", "retry", "backup", "restore", "metric",
-  "dashboard", "owner", "team", "review", "branch", "build", "test", "staging",
-  "production", "canary", "feature", "flag", "schema", "index", "query", "timeout",
+  "deploy",
+  "rollback",
+  "incident",
+  "release",
+  "service",
+  "database",
+  "migration",
+  "alert",
+  "pager",
+  "runbook",
+  "cluster",
+  "config",
+  "secret",
+  "token",
+  "cache",
+  "queue",
+  "worker",
+  "latency",
+  "error",
+  "retry",
+  "backup",
+  "restore",
+  "metric",
+  "dashboard",
+  "owner",
+  "team",
+  "review",
+  "branch",
+  "build",
+  "test",
+  "staging",
+  "production",
+  "canary",
+  "feature",
+  "flag",
+  "schema",
+  "index",
+  "query",
+  "timeout",
 ];
 
-function generateSections(count: number, seed: number): DocSection[] {
+function generateSections(
+  count: number,
+  seed: number,
+): DocSection[] {
   const random = seeded(seed);
-  const word = () => VOCABULARY[Math.floor(random() * VOCABULARY.length)]!;
-  const words = (n: number) => Array.from({ length: n }, word).join(" ");
+  const word = () =>
+    VOCABULARY[Math.floor(random() * VOCABULARY.length)]!;
+  const words = (n: number) =>
+    Array.from({ length: n }, word).join(" ");
   return Array.from({ length: count }, (_, i) => ({
     path: `docs/file-${Math.floor(i / 10)}.md`,
     heading: words(1 + Math.floor(random() * 4)),
@@ -37,7 +76,9 @@ function generateSections(count: number, seed: number): DocSection[] {
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+  return sorted.length % 2
+    ? sorted[mid]!
+    : (sorted[mid - 1]! + sorted[mid]!) / 2;
 }
 
 describe("searchDocs performance", () => {
@@ -55,7 +96,9 @@ describe("searchDocs performance", () => {
       expect(results.length).toBe(20);
     }
     const ms = median(timings);
-    console.log(`searchDocs: median ${ms.toFixed(2)} ms over 1,000 sections`);
+    console.log(
+      `searchDocs: median ${ms.toFixed(2)} ms over 1,000 sections`,
+    );
     expect(ms).toBeLessThan(50);
   });
 });

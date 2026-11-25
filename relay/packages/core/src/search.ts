@@ -1,4 +1,7 @@
-import type { DocSection, SearchResult } from "./search-types.js";
+import type {
+  DocSection,
+  SearchResult,
+} from "./search-types.js";
 import { makeSnippet } from "./snippet.js";
 import { queryTerms, tokenize } from "./terms.js";
 
@@ -23,7 +26,9 @@ export function searchDocs(
   limit: number,
 ): SearchResult[] {
   if (!Number.isInteger(limit) || limit < 1) {
-    throw new RangeError(`limit must be a positive integer, got ${limit}`);
+    throw new RangeError(
+      `limit must be a positive integer, got ${limit}`,
+    );
   }
   const terms = queryTerms(query);
   if (terms.length === 0) return [];
@@ -32,22 +37,28 @@ export function searchDocs(
   const scored: Scored[] = [];
   for (const section of sections) {
     const score =
-      HEADING_WEIGHT * countHits(section.heading, wanted) + countHits(section.body, wanted);
+      HEADING_WEIGHT * countHits(section.heading, wanted) +
+      countHits(section.body, wanted);
     if (score > 0) scored.push({ section, score });
   }
 
   scored.sort(compareScored);
 
-  return scored.slice(0, limit).map(({ section, score }) => ({
-    path: section.path,
-    heading: section.heading,
-    line: section.line,
-    snippet: makeSnippet(section.body, terms),
-    score,
-  }));
+  return scored
+    .slice(0, limit)
+    .map(({ section, score }) => ({
+      path: section.path,
+      heading: section.heading,
+      line: section.line,
+      snippet: makeSnippet(section.body, terms),
+      score,
+    }));
 }
 
-function countHits(text: string, wanted: ReadonlySet<string>): number {
+function countHits(
+  text: string,
+  wanted: ReadonlySet<string>,
+): number {
   let hits = 0;
   for (const token of tokenize(text)) {
     if (wanted.has(token.term)) hits++;
@@ -58,6 +69,7 @@ function countHits(text: string, wanted: ReadonlySet<string>): number {
 /** Score descending, then path and line ascending. Paths compare by code unit, not locale. */
 function compareScored(a: Scored, b: Scored): number {
   if (a.score !== b.score) return b.score - a.score;
-  if (a.section.path !== b.section.path) return a.section.path < b.section.path ? -1 : 1;
+  if (a.section.path !== b.section.path)
+    return a.section.path < b.section.path ? -1 : 1;
   return a.section.line - b.section.line;
 }

@@ -19,7 +19,11 @@ export function tokenize(text: string): Token[] {
     const raw = match[0];
     if ([...raw].length < MIN_TERM_LENGTH) continue;
     const start = match.index;
-    tokens.push({ term: raw.toLowerCase(), start, end: start + raw.length });
+    tokens.push({
+      term: raw.toLowerCase(),
+      start,
+      end: start + raw.length,
+    });
   }
   return tokens;
 }

@@ -29,5 +29,7 @@ export function resolveDocsRoot(
   cwd: string = process.cwd(),
 ): string {
   const { RELAY_DOCS_DIR } = EnvSchema.parse(env);
-  return RELAY_DOCS_DIR ? resolve(cwd, RELAY_DOCS_DIR) : DEFAULT_DOCS_ROOT;
+  return RELAY_DOCS_DIR
+    ? resolve(cwd, RELAY_DOCS_DIR)
+    : DEFAULT_DOCS_ROOT;
 }

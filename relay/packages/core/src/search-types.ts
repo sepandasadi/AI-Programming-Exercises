@@ -18,4 +18,6 @@ export const SearchResultSchema = z.object({
   score: z.number().int().min(1),
 });
 
-export type SearchResult = z.infer<typeof SearchResultSchema>;
+export type SearchResult = z.infer<
+  typeof SearchResultSchema
+>;

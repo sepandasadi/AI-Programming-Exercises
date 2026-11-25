@@ -12,28 +12,44 @@ describe("resolveDocsRoot", () => {
     const fromApi = resolveDocsRoot({}, "/somewhere/else");
     const fromRoot = resolveDocsRoot({}, process.cwd());
     expect(fromApi).toBe(fromRoot);
-    expect(fromApi.split(/[\\/]/).slice(-2)).toEqual(["fixtures", "team-docs"]);
+    expect(fromApi.split(/[\\/]/).slice(-2)).toEqual([
+      "fixtures",
+      "team-docs",
+    ]);
     expect(existsSync(fromApi)).toBe(true);
     const sections = await loadDocs(fromApi);
-    expect(sections.some((s) => s.path === "deploying.md")).toBe(true);
+    expect(
+      sections.some((s) => s.path === "deploying.md"),
+    ).toBe(true);
   });
 
   it("Interface: a blank RELAY_DOCS_DIR falls back to the default", () => {
     const fallback = resolveDocsRoot({});
-    expect(resolveDocsRoot({ RELAY_DOCS_DIR: "" })).toBe(fallback);
-    expect(resolveDocsRoot({ RELAY_DOCS_DIR: "   " })).toBe(fallback);
+    expect(resolveDocsRoot({ RELAY_DOCS_DIR: "" })).toBe(
+      fallback,
+    );
+    expect(resolveDocsRoot({ RELAY_DOCS_DIR: "   " })).toBe(
+      fallback,
+    );
   });
 
   it("Interface: a relative RELAY_DOCS_DIR resolves against the working directory", () => {
     const cwd = resolve("/tmp/relay-cwd");
-    expect(resolveDocsRoot({ RELAY_DOCS_DIR: "my-docs" }, cwd)).toBe(join(cwd, "my-docs"));
-    expect(resolveDocsRoot({ RELAY_DOCS_DIR: "../shared/docs" }, cwd)).toBe(
-      resolve(cwd, "../shared/docs"),
-    );
+    expect(
+      resolveDocsRoot({ RELAY_DOCS_DIR: "my-docs" }, cwd),
+    ).toBe(join(cwd, "my-docs"));
+    expect(
+      resolveDocsRoot(
+        { RELAY_DOCS_DIR: "../shared/docs" },
+        cwd,
+      ),
+    ).toBe(resolve(cwd, "../shared/docs"));
   });
 
   it("Interface: an absolute RELAY_DOCS_DIR is used as given", () => {
     const abs = resolve("/srv/team-docs");
-    expect(resolveDocsRoot({ RELAY_DOCS_DIR: abs }, "/anywhere")).toBe(abs);
+    expect(
+      resolveDocsRoot({ RELAY_DOCS_DIR: abs }, "/anywhere"),
+    ).toBe(abs);
   });
 });

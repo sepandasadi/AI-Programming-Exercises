@@ -13,19 +13,30 @@ const LEAD = 40;
  *
  * `terms` are query terms as `queryTerms` returns them (lowercase).
  */
-export function makeSnippet(body: string, terms: readonly string[]): string {
+export function makeSnippet(
+  body: string,
+  terms: readonly string[],
+): string {
   const text = body.replace(/\s+/g, " ").trim();
   if (text.length <= SNIPPET_LENGTH) return text;
 
   const wanted = new Set(terms);
-  const first = tokenize(text).find((t) => wanted.has(t.term));
+  const first = tokenize(text).find((t) =>
+    wanted.has(t.term),
+  );
 
   let start = 0;
   if (first) {
     // Start LEAD characters early, but late enough that a long term still
     // fits, and early enough that a match near the end fills the window.
-    const ideal = Math.max(first.start - LEAD, first.end - SNIPPET_LENGTH);
-    start = Math.max(0, Math.min(ideal, text.length - SNIPPET_LENGTH));
+    const ideal = Math.max(
+      first.start - LEAD,
+      first.end - SNIPPET_LENGTH,
+    );
+    start = Math.max(
+      0,
+      Math.min(ideal, text.length - SNIPPET_LENGTH),
+    );
   }
   let end = start + SNIPPET_LENGTH;
 
