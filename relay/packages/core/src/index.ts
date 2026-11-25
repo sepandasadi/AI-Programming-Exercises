@@ -20,3 +20,10 @@ export { queryTerms, tokenize } from "./terms.js";
 export { parseSections } from "./sections.js";
 export { searchDocs } from "./search.js";
 export { MAX_DOC_BYTES, loadDocs } from "./load-docs.js";
+export type { SearchParams } from "./search-schema.js";
+export {
+  DEFAULT_LIMIT,
+  MAX_LIMIT,
+  MAX_QUERY_LENGTH,
+  SearchParamsSchema,
+} from "./search-schema.js";
