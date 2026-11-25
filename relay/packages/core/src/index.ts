@@ -17,3 +17,4 @@ export type { DocSection, SearchResult } from "./search-types.js";
 export { SearchResultSchema } from "./search-types.js";
 export type { Token } from "./terms.js";
 export { queryTerms, tokenize } from "./terms.js";
+export { parseSections } from "./sections.js";
