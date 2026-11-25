@@ -25,5 +25,6 @@ code and may not edit the tests.
 - [ ] **Task 3: issue schema and `POST /triage`.**
   Files: `packages/core/src/issue-schema.ts`,
   `issue-schema.test.ts`, `index.ts`,
-  `apps/api/src/app.ts`, `app.test.ts`,
+  `apps/api/src/app.ts`, `app.triage.test.ts` (not
+  `app.test.ts`, which is tagged for docs search),
   `fixtures/issues/*.json`. ACs: AC-8, AC-9, AC-10.

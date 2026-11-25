@@ -1,9 +1,11 @@
 import { Hono } from "hono";
 import {
   type DocSection,
+  IssueSchema,
   SearchParamsSchema,
   health,
   searchDocs,
+  triageIssue,
 } from "@relay/core";
 
 export type AppOptions = {
@@ -33,6 +35,32 @@ export function createApp({
     return c.json({
       query: q,
       results: searchDocs(sections, q, limit),
+    });
+  });
+
+  app.post("/triage", async (c) => {
+    let payload: unknown;
+    try {
+      payload = await c.req.json();
+    } catch {
+      return c.json(
+        { error: "body must be valid JSON" },
+        400,
+      );
+    }
+    const parsed = IssueSchema.safeParse(payload);
+    if (!parsed.success) {
+      const error = parsed.error.issues
+        .map((issue) => issue.message)
+        .join("; ");
+      return c.json({ error }, 400);
+    }
+    const { respondBy, ...triage } = triageIssue(
+      parsed.data,
+    );
+    return c.json({
+      ...triage,
+      respondBy: respondBy.toISOString(),
     });
   });
 
