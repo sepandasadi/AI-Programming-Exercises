@@ -15,9 +15,10 @@ differently.
 
 Run `node summarize.mjs <path-to-output>` for each live batch. Check the
 settings and prompt digest in the first line of each file. Record total
-input and output tokens, the number of distinct texts, the verdict
-counts, and median latency. Pick a pair of examples from the raw data
-that explains what one of the aggregate numbers missed.
+input and output tokens, distinct texts, parseable replies, correct
+deadline instants, exact matches, and median latency. Pick a pair of
+examples from the raw data that explains what one of the aggregate
+numbers missed.
 
 ## Solution notes
 

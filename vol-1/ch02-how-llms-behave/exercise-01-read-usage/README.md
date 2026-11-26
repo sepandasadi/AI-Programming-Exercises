@@ -32,7 +32,50 @@ curl --fail --silent --show-error \
 
 The tested tokenizer returned 24 tokens for that timestamp, two for
 `respondBy` and one for `rollback`. These plain-string counts exclude
-chat framing. Use the run's `inputTokens` to count the full message.
+chat framing.
+
+## Optional: Count the chat-framed prompt
+
+With the same server running, run this from the [chapter folder](../).
+`/apply-template` formats the user message as the model expects it.
+Then `/tokenize` counts the formatted text with no extra special tokens
+added by the tokenizer.
+
+```sh
+node --input-type=module <<'JS'
+import { readFile } from "node:fs/promises";
+
+async function post(path, body) {
+  const response = await fetch(`http://127.0.0.1:18082${path}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+  return response.json();
+}
+
+async function count(content) {
+  const { tokens } = await post("/tokenize", { content, add_special: false });
+  return tokens.length;
+}
+
+const prompt = await readFile("prompt.txt", "utf8");
+const issue = prompt.split("\n\n").find((block) => block.startsWith("Issue 412\n"));
+const framed = await post("/apply-template", {
+  messages: [{ role: "user", content: prompt }],
+});
+
+console.log("Issue alone:", await count(issue));
+console.log("Raw prompt:", await count(prompt));
+console.log("Chat-framed prompt:", await count(framed.prompt));
+JS
+```
+
+The issue block from `Issue 412` through `Created:`, with no trailing
+newline, takes 45 tokens. The raw `prompt.txt` takes 178, and the
+chat-framed prompt takes 207. Compare the last count with `inputTokens`
+in the recording. Each request reported 207.
 
 ## Solution
 

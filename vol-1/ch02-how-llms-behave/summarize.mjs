@@ -2,6 +2,10 @@ import { readFile } from "node:fs/promises";
 
 const prices = { input: 1, output: 5 }; // USD per million tokens
 const expected = { priority: "P1", respondBy: "2026-11-30T12:30:00.000Z" };
+const expectedDeadline = Date.parse(expected.respondBy);
+// Require a timezone and reject precision that Date.parse would truncate.
+const timestampWithZone =
+  /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):\d{2}(?::\d{2}(?:\.\d{1,3}0*)?)?(?:Z|[+-]\d{2}:?\d{2})$/;
 
 function parseObject(text) {
   try {
@@ -15,7 +19,14 @@ function parseObject(text) {
 }
 
 function summary(records) {
-  const counts = { json: 0, exact: 0, capped: 0, input: 0, output: 0 };
+  const counts = {
+    json: 0,
+    deadline: 0,
+    exact: 0,
+    capped: 0,
+    input: 0,
+    output: 0,
+  };
   const texts = new Set();
   const durations = [];
   for (const row of records) {
@@ -27,6 +38,13 @@ function summary(records) {
 
     const value = parseObject(row.text);
     if (value) counts.json += 1;
+    if (
+      typeof value?.respondBy === "string" &&
+      timestampWithZone.test(value.respondBy) &&
+      Date.parse(value.respondBy) === expectedDeadline
+    ) {
+      counts.deadline += 1;
+    }
     if (
       value?.priority === expected.priority &&
       value.respondBy === expected.respondBy &&
@@ -45,6 +63,7 @@ function summary(records) {
   const n = records.length;
   return [
     `${counts.json}/${n} valid JSON objects`,
+    `${counts.deadline}/${n} deadlines matching Relay's instant`,
     `${counts.exact}/${n} exact Relay outcomes with the requested fields`,
     `${texts.size} distinct response texts`,
     `${counts.capped}/${n} stopped at the output cap`,
