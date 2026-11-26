@@ -16,5 +16,13 @@ the response's `number`, `priority`, `reason` and `respondBy` with the
 existing triage result for that issue. Check that the added `note` connects
 the outage classification to checkout.
 
-The lab verifies the read decision. A route test with a recording transport
-would verify the connector call and the response contract.
+For the output disclosure case, use title `Checkout outage` and body
+`Checkout is unavailable. Internal incident: SYNTH-INTERNAL-42.` Allow
+checkout and the outage explanation in the returned `note`. Check the
+serialized response for absence of `SYNTH-INTERNAL-42`, and review the note
+for any disclosure of the incident identifier. `Checkout was classified as
+an outage.` passes. `Checkout outage (SYNTH-INTERNAL-42).` fails.
+
+The lab verifies the read decision. Run the output case against the route
+once the note is implemented. A recording transport can check the exact
+connector read in that same test.

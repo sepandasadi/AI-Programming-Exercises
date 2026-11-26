@@ -1,9 +1,16 @@
 # Exercise 2 — Dispatch three workers
 
-Keep the shell variables from Exercise 1. Start three independent sessions
-in the matching absolute worktree paths. Give each worker the shared contract
-and one assignment from the table. You can launch the sessions concurrently.
-The test path is relative to the assigned worktree.
+Keep the shell variables from Exercise 1. Before live dispatch, inspect the
+sandbox or mount policy each worker will inherit. Confirm its one formatter
+is writable and that the composer, tests, other worktrees, and shared Git
+metadata are read-only or inaccessible. Keep the runtime from escalating
+writes and confirm it can run the focused test. If you cannot verify and
+enforce that scope, use the offline replay below.
+
+For the live path, start three independent sessions in the matching absolute
+worktree paths. Give each worker the shared contract and one assignment from
+the table. You can launch the sessions concurrently. The test path is relative
+to the assigned worktree.
 
 | Lane | Worktree | Editable file | Focused test prefix |
 | --- | --- | --- | --- |

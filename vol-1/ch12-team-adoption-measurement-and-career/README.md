@@ -21,7 +21,7 @@ node --test report.test.mts
 ```
 
 Expect an overall scorecard, `pause` for triage, `extend` for docs and $61.70
-in total pilot spend. To implement the report yourself, edit `starter/report.mts`.
+in assisted tool spend. To implement the report yourself, edit `starter/report.mts`.
 The exercises show how to run the same assertions against the starter.
 
 The optional strict check uses Relay's pinned compiler and Node types. If

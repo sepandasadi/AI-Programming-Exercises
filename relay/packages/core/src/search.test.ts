@@ -233,6 +233,17 @@ describe("searchDocs", () => {
     ).toBe("Run the script.");
   });
 
+  it("AC-4: keeps the end of a matching term longer than 160 units", () => {
+    const suffix = "b".repeat(159) + "c";
+    const term = "a".repeat(40) + suffix;
+    const sections = [
+      section("a.md", "Example", `Before ${term} after.`),
+    ];
+    expect(searchDocs(sections, term, 1)[0]?.snippet).toBe(
+      suffix,
+    );
+  });
+
   it("rejects a limit that is not a positive integer", () => {
     const sections = [section("a.md", "Deploy", "")];
     for (const limit of [0, -1, 2.5, Number.NaN]) {

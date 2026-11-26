@@ -1,9 +1,12 @@
 # Exercise 2 — Compare two briefs
 
 Use the lab's `relay/` directory and the same agent, model and
-permissions for both runs. Start a new session each time. Keep the
-companion checker and solution material out of the sessions. Use them
-yourself when evaluating the reports.
+permissions for both runs. Start a new session each time and disable
+persistent memory in both. For Claude Code, launch each session with
+`CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`. If your tool cannot disable memory,
+restore the same starting state before each session. Record the memory
+setting with the results. Keep the companion checker and solution material
+out of the sessions. Use them yourself when evaluating the reports.
 
 Copy the following brief for the broad run. For the targeted run, copy
 the same brief and append the pointers below it.

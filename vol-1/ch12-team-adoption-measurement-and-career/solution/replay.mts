@@ -17,6 +17,6 @@ for (const [label, pairs] of [['Docs', docs], ['Triage', triage]] as const) {
 
 const cost = pilotCostUsd(relayPairs, rates, seats);
 console.log(
-  `Pilot spend: $${cost.totalUsd.toFixed(2)} ` +
+  `Assisted tool spend: $${cost.totalUsd.toFixed(2)} ` +
   `($${cost.seatUsd.toFixed(2)} seats + $${cost.tokenUsd.toFixed(2)} metered usage)`,
 );

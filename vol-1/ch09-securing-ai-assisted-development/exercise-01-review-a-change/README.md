@@ -8,7 +8,9 @@ and what the resulting application would do with that access.
 For each numbered decision, record the asset at risk, the boundary
 crossed, a control that can enforce the requirement, and evidence you
 would accept in review. Include one positive check that shows the
-requested task still works. Mark which changes block approval.
+requested task still works. Give the note a separate disclosure check with
+an allowed workflow name and a restricted synthetic incident identifier.
+Mark which changes block approval.
 
 **Verify it.** Compare your review with the [reference review](../solution/review.md).
 Each concern should have a check that can fail when the corresponding

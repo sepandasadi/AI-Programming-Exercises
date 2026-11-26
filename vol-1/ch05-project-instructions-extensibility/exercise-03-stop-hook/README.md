@@ -1,7 +1,9 @@
 # Exercise 3: A stop hook
 
-**Goal:** a hook that keeps the agent from finishing while
-`pnpm typecheck` fails, and that cannot trap it in a loop.
+Give the agent one corrective retry when `pnpm typecheck` fails. The
+loop guard permits the next stop when `stop_hook_active` is true. In the
+completion report, include the latest typecheck result and any remaining
+errors.
 
 ## Instructions
 
@@ -13,6 +15,8 @@
    - otherwise run `pnpm typecheck` in `relay/`;
    - on failure, exit 2 with the last 30 lines of output on stderr and a
      sentence telling the agent to fix the errors or say why it can't.
+   Ask the agent for the latest typecheck result and any remaining errors
+   in its completion report.
 2. Make the command overridable with an environment variable, so tests
    can simulate a failing check without breaking the code.
 3. Write `typecheck-on-stop.test.ts` next to it: pass, fail,
@@ -31,8 +35,8 @@
   `packages/core/src/`, ask your agent to make an unrelated one-line
   change, and watch it get sent back to fix the type error before it
   stops. Then ask it to stop while a type error it can't fix remains (for
-  example, one in a file you told it not to touch): it should stop after
-  one retry, not loop.
+  example, one in a file you told it not to touch). Verify that it stops
+  after one retry and reports the remaining error.
 
 ## Solution
 

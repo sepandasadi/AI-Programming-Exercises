@@ -2,6 +2,8 @@
 
 1. `relay-11.0` is the control label. Ask for the test result and artifact
    identity for the proposed `relay-11.1` revision and link them in the packet.
+   Mark candidate CI evidence missing until those records are available.
+   The local canary replay supplies routing and behavior observations.
 2. Assign a Relay maintainer to evaluate the reviewed revision and the Relay
    API rotation to own exposure. Identify the on-call operator who can act on
    a stop decision.
