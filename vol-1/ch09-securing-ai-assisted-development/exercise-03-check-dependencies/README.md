@@ -17,8 +17,9 @@ RELAY_LAB_STARTER=1 node --test \
   --test-name-pattern='^dependency gate' verification/security.test.mts
 ```
 
-The untouched starter fails the exact-match check. The completed
-function should pass all five tests. Compare your code with the
-[reference solution](../solution/check-dependencies.mts). In a real
-pipeline, a trusted extractor and a separate review of provenance,
+The untouched starter fails the exact-match and mixed-inventory checks
+because it holds approved packages. The completed function should pass
+all six tests, including the order and input checks in the mixed case.
+Compare your code with the [reference solution](../solution/check-dependencies.mts).
+In a real pipeline, a trusted extractor and a separate review of provenance,
 integrity, transitive dependencies and scripts would still be needed.

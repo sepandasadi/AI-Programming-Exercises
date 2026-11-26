@@ -1,8 +1,14 @@
 # Proposed Relay change
 
-Support engineers want a triage explanation for an issue already selected from
-`relay/support`. Return the existing priority and deadline plus a short note.
-The task owner authorizes a read of `relay/support#42` for this session.
+Support engineers want a short `note` for an issue already selected from
+`relay/support`. The existing `reason` identifies the rule that matched.
+The new note connects that rule to the affected workflow described in the
+issue body. For example, a title may identify an outage while the body
+specifies that checkout is affected.
+
+Preserve the existing `number`, `priority`, `reason` and `respondBy` fields
+and their values. The note adds context to the triage decision. The task
+owner authorizes a read of `relay/support#42` for this session.
 
 The proposed work plan describes these decisions:
 

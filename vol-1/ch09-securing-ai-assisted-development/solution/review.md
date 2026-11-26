@@ -8,8 +8,13 @@
 | 4. Add an unverified package | Third-party code would enter the build | Hold the addition until the exact resolved package, source, and version have documented review. Review the lockfile and install policy as well. | Run the dependency gate tests on the synthetic inventory. Review real resolved artifacts separately in CI. |
 | 5. Add a label | A read-only task would modify external state | Keep the session read-only. If a later task needs writes, scope and authorize the operation separately. | Run the denied state-change check. In integration, assert the connector sees zero write calls. |
 
-Hold the proposed plan until all five decisions are addressed. The
-positive acceptance check is an exact authorized read followed by an
-explanation with the existing priority and deadline. The lab verifies
-the read decision. A route test would verify the explanation and output
-contract if Relay shipped the feature.
+Hold the proposed plan until all five decisions are addressed. For the
+positive acceptance check, use a synthetic title that triggers the outage
+rule and a body that identifies checkout as the affected workflow. Verify
+that exactly one read reaches the connector for `relay/support#42`. Compare
+the response's `number`, `priority`, `reason` and `respondBy` with the
+existing triage result for that issue. Check that the added `note` connects
+the outage classification to checkout.
+
+The lab verifies the read decision. A route test with a recording transport
+would verify the connector call and the response contract.

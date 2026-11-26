@@ -22,10 +22,10 @@ cd "$lab_copy"
 ```
 
 The untouched starter denies all tool requests and holds all packages.
-The starter suite should initially report three failures. Two cover
-allowed reads and one covers an approved package. The denial and hold
-checks should pass already. After both coding exercises, all 13 should
-pass with this command.
+The starter suite should initially report four failures. Two cover
+allowed reads and two expect an approved package to be filtered out.
+The denial and hold checks should pass already. After both coding
+exercises, all 14 should pass with this command.
 
 ```sh
 RELAY_LAB_STARTER=1 node --test verification/security.test.mts

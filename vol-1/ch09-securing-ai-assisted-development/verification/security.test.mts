@@ -120,3 +120,23 @@ test("dependency gate holds every entry when approvals are absent", () => {
   assert.deepEqual(unapprovedDependencies([reviewed], []), [reviewed]);
   assert.deepEqual(unapprovedDependencies([], approved), []);
 });
+
+test("dependency gate preserves output order and leaves both inputs intact", () => {
+  const approvedPackages = [
+    { ...reviewed, name: "@example/relay-words" },
+    { ...reviewed },
+  ];
+  const candidates = [
+    { ...reviewed, name: "@example/relay-summary" },
+    { ...reviewed },
+    { ...reviewed, name: "@example/relay-notes" },
+  ];
+  const originalCandidates = structuredClone(candidates);
+  const originalApprovals = structuredClone(approvedPackages);
+
+  const held = unapprovedDependencies(candidates, approvedPackages);
+
+  assert.deepEqual(candidates, originalCandidates);
+  assert.deepEqual(approvedPackages, originalApprovals);
+  assert.deepEqual(held, [originalCandidates[0], originalCandidates[2]]);
+});
