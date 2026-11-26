@@ -6,6 +6,7 @@ Use Node.js 22.18 or newer to run the standalone `.mts` scripts directly.
 
 | Chapter | Folder |
 | --- | --- |
+| Ch. 1 The New Programming | [ch01-the-new-programming](ch01-the-new-programming/) |
 | Ch. 2 How LLMs Behave | [ch02-how-llms-behave](ch02-how-llms-behave/) |
 | Ch. 3 Context Engineering | [ch03-context-engineering](ch03-context-engineering/) |
 | Ch. 4 Your Agent Toolkit, Tool-Agnostic | [ch04-agent-toolkit](ch04-agent-toolkit/) |
