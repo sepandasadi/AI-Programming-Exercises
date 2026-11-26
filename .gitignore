@@ -8,3 +8,5 @@ coverage/
 *.log
 .stryker-tmp/
 reports/
+CLAUDE.local.md
+relay/.claude/settings.local.json

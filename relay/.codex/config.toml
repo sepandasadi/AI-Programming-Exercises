@@ -1,0 +1,6 @@
+# Project config for Codex; loads only in trusted projects.
+# The token comes from your environment, never this file.
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/readonly"
+bearer_token_env_var = "GITHUB_MCP_TOKEN"
+http_headers = { "X-MCP-Toolsets" = "issues,pull_requests" }

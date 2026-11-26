@@ -57,3 +57,33 @@ curl -s -X POST localhost:3000/triage \
   first to include new files.
 - `scripts/guard-tests.mjs` is a pre-edit hook that refuses edits to test files
   (exit code 2). Set `RELAY_ALLOW_TEST_EDITS=1` in a test-writing session.
+
+## Agent config (Vol. 1, Ch. 5)
+
+Relay ships project instructions and extensions for coding agents. All of
+it is checked by `pnpm agents:check`, which CI runs.
+
+| What | Where | Read by |
+| --- | --- | --- |
+| Project instructions | `AGENTS.md`, `apps/api/AGENTS.md`, `packages/core/AGENTS.md` | Codex, Copilot, Cursor, Claude Code (no `CLAUDE.md`, so it reads `AGENTS.md`); Gemini CLI through `context.fileName` in `.gemini/settings.json` |
+| Skills | `.agents/skills/` (`add-api-route`, `task`); `.claude/skills` is a symlink to it | Codex, Copilot, Cursor, Gemini CLI; Claude Code through the symlink |
+| Hooks | `scripts/hooks/*.mjs`, wired in `.claude/settings.json` and `.codex/hooks.json` | Claude Code, Codex (trusted projects; trust each hook in `/hooks`) |
+| MCP servers | `.mcp.json` (Claude Code, Copilot CLI), `.codex/config.toml` (Codex) | GitHub's server, read-only, issues and pull requests only |
+| Sub-agent | `.claude/agents/reviewer.md` | Claude Code |
+
+The hooks refuse tool calls that name a `.env` file (`protect-env.mjs`) and
+run Prettier on files the agent writes (`format-edited.mjs`). Ch. 7's
+`scripts/guard-tests.mjs` is not wired in by default; add it in a session
+whose tests are locked.
+
+The GitHub MCP server needs a fine-grained personal access token with
+read-only access to the repositories you want, in your shell:
+
+```sh
+export GITHUB_MCP_TOKEN=github_pat_...   # never in a committed file
+claude mcp get github                     # or: codex mcp get github
+```
+
+On Windows, enable symlinks (`git config core.symlinks true` and Developer
+Mode) before cloning, or `.claude/skills` checks out as a text file and
+`pnpm agents:check` fails.

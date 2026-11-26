@@ -1,0 +1,260 @@
+diff --git a/relay/README.md b/relay/README.md
+index 89a3ae6..085a07c 100644
+--- a/relay/README.md
++++ b/relay/README.md
+@@ -44,6 +44,15 @@ curl -s -X POST localhost:3000/triage \
+   -d @fixtures/issues/friday-outage.json
+ ```
+ 
++## SLA table
++
++`GET /sla` returns the respond-by allowance for each priority, from the
++table triage uses (spec: `docs/specs/sla-table.md`).
++
++```sh
++curl -s localhost:3000/sla
++```
++
+ ## Verification tools (Vol. 1, Ch. 7)
+ 
+ - Property tests (`*.property.test.ts`, fast-check) run with `pnpm test`.
+diff --git a/relay/apps/api/src/app.sla.test.ts b/relay/apps/api/src/app.sla.test.ts
+new file mode 100644
+index 0000000..821117f
+--- /dev/null
++++ b/relay/apps/api/src/app.sla.test.ts
+@@ -0,0 +1,29 @@
++// spec: sla-table
++import { describe, expect, it } from "vitest";
++import { z } from "zod";
++import { PRIORITIES } from "@relay/core";
++import { createApp } from "./app.js";
++
++const BodySchema = z.strictObject({
++  priorities: z.array(
++    z.strictObject({
++      priority: z.enum(PRIORITIES),
++      hours: z.number().int().positive(),
++      clock: z.enum(["calendar", "business"]),
++    }),
++  ),
++});
++
++describe("GET /sla", () => {
++  it("AC-1: returns 200 with one entry per priority, P0 to P3", async () => {
++    const res = await createApp().request("/sla");
++    expect(res.status).toBe(200);
++    const body = BodySchema.parse(await res.json());
++    expect(body.priorities.map((e) => e.priority)).toEqual([
++      "P0",
++      "P1",
++      "P2",
++      "P3",
++    ]);
++  });
++});
+diff --git a/relay/apps/api/src/app.ts b/relay/apps/api/src/app.ts
+index 8295f90..ec0735e 100644
+--- a/relay/apps/api/src/app.ts
++++ b/relay/apps/api/src/app.ts
+@@ -6,6 +6,7 @@ import {
+   SearchParamsSchema,
+   health,
+   searchDocs,
++  slaTable,
+   triageIssue,
+ } from "@relay/core";
+ 
+@@ -24,6 +25,10 @@ export function createApp({
+ 
+   app.get("/health", (c) => c.json(health()));
+ 
++  app.get("/sla", (c) =>
++    c.json({ priorities: slaTable() }),
++  );
++
+   app.get("/search", (c) => {
+     const parsed = SearchParamsSchema.safeParse({
+       q: c.req.query("q"),
+diff --git a/relay/docs/plans/sla-table.md b/relay/docs/plans/sla-table.md
+new file mode 100644
+index 0000000..6d3941c
+--- /dev/null
++++ b/relay/docs/plans/sla-table.md
+@@ -0,0 +1,14 @@
++# Plan: SLA table
++
++Spec: `docs/specs/sla-table.md`. Each task is one reviewable
++commit and leaves the build green. Verify every task with
++`pnpm build && pnpm typecheck && pnpm test`.
++
++- [ ] **Task 1: `slaTable` in core.**
++  Files: `packages/core/src/triage.ts`,
++  `packages/core/src/sla.test.ts`, `packages/core/src/index.ts`.
++  ACs: AC-2, AC-3.
++- [ ] **Task 2: `GET /sla`.**
++  Files: `apps/api/src/app.ts`, `apps/api/src/app.sla.test.ts`,
++  `README.md`. ACs: AC-1.
++  Verify: also the smoke check from the spec.
+diff --git a/relay/docs/specs/sla-table.md b/relay/docs/specs/sla-table.md
+new file mode 100644
+index 0000000..8148cf1
+--- /dev/null
++++ b/relay/docs/specs/sla-table.md
+@@ -0,0 +1,62 @@
++# Spec: SLA table (v1)
++
++Status: approved · Owner: Relay team
++
++## Problem
++
++People who file or triage issues want to know how soon each
++priority gets a response, without reading `triage.ts`.
++
++## Goal
++
++`GET /sla` returns the respond-by allowance for each priority,
++from the same table triage uses.
++
++## Non-goals
++
++- No changing SLAs through the API.
++- No per-team or per-repo SLAs.
++- No UI.
++
++## Behavior
++
++An *entry* is `{ priority, hours, clock }`: `hours` is the
++allowance in whole hours, and `clock` is `"calendar"` (every
++hour counts) or `"business"` (only Monday to Friday, 09:00 to
++17:00 UTC count, as in `docs/specs/issue-triage.md`).
++
++## Acceptance criteria
++
++- AC-1: `GET /sla` returns 200 and `{ "priorities": [...] }`
++  with exactly one entry per priority, ordered P0, P1, P2, P3.
++- AC-2: The entries are P0 1 hour calendar, P1 4 hours
++  business, P2 16 hours business, P3 40 hours business.
++- AC-3: For an issue created on a Monday at 09:00 UTC, the
++  respond-by time triage gives each priority is the start plus
++  that priority's `hours` on its `clock`.
++
++## Interface
++
++- Core: `slaTable(): SlaEntry[]` and
++  `type SlaEntry = { priority: Priority; hours: number;
++  clock: "calendar" | "business" }`, exported from
++  `@relay/core`.
++- API: `GET /sla` → 200 `{ "priorities": SlaEntry[] }`.
++
++## Constraints
++
++- One table: `slaTable()` reads the table `triageIssue` uses;
++  no second copy of the numbers.
++- No new dependencies.
++
++## Verification
++
++- `pnpm spec:check docs/specs/sla-table.md` passes.
++- `pnpm build && pnpm typecheck && pnpm test` pass.
++- Manual: `pnpm build`, then
++  `bash .agents/skills/add-api-route/scripts/smoke.sh /sla`
++  prints the four entries and `HTTP 200`.
++
++## Open questions
++
++None.
+diff --git a/relay/packages/core/src/index.ts b/relay/packages/core/src/index.ts
+index d23f7e8..bafaeb3 100644
+--- a/relay/packages/core/src/index.ts
++++ b/relay/packages/core/src/index.ts
+@@ -25,6 +25,8 @@ export { searchDocs } from "./search.js";
+ export { MAX_DOC_BYTES, loadDocs } from "./load-docs.js";
+ export { addBusinessTime } from "./business-time.js";
+ export type { Issue, Priority, Triage } from "./triage.js";
++export type { SlaEntry } from "./sla.js";
++export { slaTable } from "./sla.js";
+ export { PRIORITIES, triageIssue } from "./triage.js";
+ export {
+   IssueSchema,
+diff --git a/relay/packages/core/src/sla.test.ts b/relay/packages/core/src/sla.test.ts
+new file mode 100644
+index 0000000..5ad02dd
+--- /dev/null
++++ b/relay/packages/core/src/sla.test.ts
+@@ -0,0 +1,52 @@
++// spec: sla-table
++import { describe, expect, it } from "vitest";
++import { addBusinessTime } from "./business-time.js";
++import { slaTable } from "./sla.js";
++import { type Priority, triageIssue } from "./triage.js";
++
++const HOUR = 60 * 60 * 1000;
++
++describe("slaTable", () => {
++  it("AC-2: P0 1h calendar, P1 4h, P2 16h, P3 40h business", () => {
++    expect(slaTable()).toMatchObject([
++      { priority: "P0", hours: 1 },
++      { priority: "P1", hours: 4 },
++      { priority: "P2", hours: 16 },
++      { priority: "P3", hours: 40 },
++    ]);
++  });
++
++  it("AC-3: triage's respond-by matches the table, from Monday 09:00", () => {
++    // 2026-11-23 is a Monday.
++    const createdAt = new Date("2026-11-23T09:00:00Z");
++    const expected: Record<Priority, string> = {
++      P0: "2026-11-23T10:00:00.000Z",
++      P1: "2026-11-23T13:00:00.000Z",
++      P2: "2026-11-24T17:00:00.000Z",
++      P3: "2026-11-27T17:00:00.000Z",
++    };
++    // P3 runs into the next week; triage.test.ts covers it.
++    for (const {
++      priority,
++      hours,
++      clock,
++    } of slaTable().slice(0, 3)) {
++      const n = priority.slice(1);
++      const { respondBy } = triageIssue({
++        number: 1,
++        title: "x",
++        body: null,
++        labels: [`priority:p${n}`],
++        createdAt,
++      });
++      const fromTable =
++        clock === "calendar"
++          ? new Date(createdAt.getTime() + hours * HOUR)
++          : addBusinessTime(createdAt, hours * HOUR);
++      expect(respondBy.toISOString()).toBe(
++        expected[priority],
++      );
++      expect(respondBy).toEqual(fromTable);
++    }
++  });
++});
+diff --git a/relay/packages/core/src/sla.ts b/relay/packages/core/src/sla.ts
+new file mode 100644
+index 0000000..b1e8bf0
+--- /dev/null
++++ b/relay/packages/core/src/sla.ts
+@@ -0,0 +1,17 @@
++import type { Priority } from "./triage.js";
++
++export type SlaEntry = {
++  priority: Priority;
++  hours: number;
++  clock: "calendar" | "business";
++};
++
++/** Respond-by allowance per priority, most urgent first. */
++export function slaTable(): SlaEntry[] {
++  return [
++    { priority: "P0", hours: 1, clock: "calendar" },
++    { priority: "P1", hours: 4, clock: "business" },
++    { priority: "P2", hours: 16, clock: "business" },
++    { priority: "P3", hours: 40, clock: "calendar" },
++  ];
++}
