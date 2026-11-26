@@ -3,6 +3,7 @@
 - Revision and checkout:
 - Question from the caller:
 - Decision and governing source:
-- Reproducible evidence:
+- Observed results:
+- Command to rerun from the checkout:
 - Next action:
 - Open question that could change it:

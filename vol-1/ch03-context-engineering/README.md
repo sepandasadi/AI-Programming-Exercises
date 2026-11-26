@@ -4,16 +4,17 @@ Use Relay at `v1-ch07`. Keep this exercise folder available when checking
 out the tag, since the tag predates it. Run from the repository root:
 
 ```sh
+exercises_root="$(pwd)"
 git worktree add --detach ../relay-context-lab v1-ch07
 cd ../relay-context-lab/relay
 pnpm install --frozen-lockfile
 pnpm build
+node "$exercises_root/vol-1/ch03-context-engineering/verify-search.mjs"
 ```
 
-Run `node /path/to/ch03-context-engineering/verify-search.mjs` from the
-lab's `relay/` directory. The script runs two requests against the built
-handler with the bundled docs. It exits nonzero if a status, heading or
-validation message differs from the expected result.
+The last command runs two requests from the lab's `relay/` directory
+against the built handler with the bundled docs. It exits nonzero if a
+status, heading or validation message differs from the expected result.
 
 | Exercise | Verification |
 | --- | --- |

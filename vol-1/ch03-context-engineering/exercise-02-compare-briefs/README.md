@@ -1,15 +1,24 @@
 # Exercise 2 — Compare two briefs
 
-Use the same agent, model, working directory, baseline and permissions
-for both runs. Start a new session each time.
+Use the lab's `relay/` directory and the same agent, model and
+permissions for both runs. Start a new session each time. Keep the
+companion checker and solution material out of the sessions. Use them
+yourself when evaluating the reports.
 
-**Broad brief.** “Investigate the 400 for `/search?q=rollback&limit=2.0`.
-Explain it without changing files.”
+Copy the following brief for the broad run. For the targeted run, copy
+the same brief and append the pointers below it.
 
-**Targeted brief.** “At `v1-ch07`, check the 400 for
-`/search?q=rollback&limit=2.0` against AC-6 and Behavior in
-`docs/specs/docs-search.md`. Start at the `/search` handler. Identify the
-validation rule, compare with `limit=2`, and leave the files alone.”
+**Broad brief**
+
+> At `v1-ch07`, investigate the 400 for `/search?q=rollback&limit=2.0`.
+> Cite the governing spec and validation code. Run both requests through
+> the handler with the bundled docs, changing only `limit` from `2.0` to
+> `2`, and report the command and responses. Leave the files alone.
+
+**Pointers for the targeted brief**
+
+> Start with AC-6 and Behavior in `docs/specs/docs-search.md` and the
+> `/search` handler in `apps/api/src/app.ts`.
 
 ## Verification
 
@@ -20,8 +29,8 @@ spec and `verify-search.mjs`.
 
 ## Solution notes
 
-Both reports can be correct. A narrower brief is useful when it avoids
-irrelevant reads or prompts the agent to show the missing evidence. If
-the broader run discovers the right spec and needs the same number of
-reads, record that result. A pair of runs does not establish a general
-performance difference.
+Both reports can be correct. Check whether the pointers changed which
+files the agent opened or helped it find evidence for a claim. If both
+runs find the same evidence in the same number of reads, record that
+result. A pair of runs does not establish a general performance
+difference.
