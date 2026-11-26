@@ -28,26 +28,32 @@ for lane in priority deadline ownership; do
 done
 ```
 
-**Verify it.** From the coordinating shell, inspect each diff and run its
-focused check. Each should change exactly one file and pass one test.
-All five tests become useful as a gate when the three changes meet.
+**Verify it.** From the coordinating shell, compare each formatter in its
+worktree with `HEAD`. That diff shows what the commit below will contain.
+Each worktree should change exactly one file and pass one focused test.
+Continue to the commit step after all three checks pass.
 
 ```sh
-for lane in priority deadline ownership; do
-  git -C "$scratch/$lane" status --short
-  git -C "$scratch/$lane" diff -- "src/$lane.mts"
-  (cd "$scratch/$lane" &&
-    node --test --test-name-pattern="^$lane:" test/handoff.test.mts) || break
-done
+(
+  for lane in priority deadline ownership; do
+    git -C "$scratch/$lane" status --short &&
+      git -C "$scratch/$lane" diff HEAD -- "src/$lane.mts" &&
+      (cd "$scratch/$lane" &&
+        node --test --test-name-pattern="^$lane:" test/handoff.test.mts) || exit $?
+  done
+)
 ```
 
 `git status --short` includes untracked paths. Review and resolve any
-extra changes before committing. Commit only the reviewed formatter
-in each worktree.
+extra changes before committing. If you make any edits during review,
+repeat verification. Each commit reads the reviewed formatter from its
+worktree and leaves other staged paths out of the commit.
 
 ```sh
-for lane in priority deadline ownership; do
-  git -C "$scratch/$lane" add -- "src/$lane.mts"
-  git -C "$scratch/$lane" commit -m "Implement $lane formatter"
-done
+(
+  for lane in priority deadline ownership; do
+    git -C "$scratch/$lane" commit --only \
+      -m "Implement $lane formatter" -- "src/$lane.mts" || exit $?
+  done
+)
 ```

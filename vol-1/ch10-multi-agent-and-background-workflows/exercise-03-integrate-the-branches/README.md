@@ -21,15 +21,25 @@ git -C "$integration" merge --ff --no-edit lab/priority &&
   git -C "$integration" merge --ff --no-edit lab/ownership
 ```
 
-**Verify it.** Run the full suite on the joined revision. Expect five
-passing tests, including both `integration:` cases. Record the revision
-and results and check the final diff against the base. Only the three
-formatter files should differ.
+**Verify it.** Check that the integration checkout is clean so the tests
+exercise the commit you will report. Expect five passing tests, including
+both `integration:` cases. After they pass, record the commit and results
+and check the final diff against the base. Only the three formatter files
+should differ.
 
 ```sh
-(cd "$integration" && node --test test/handoff.test.mts)
-git -C "$integration" rev-parse HEAD
-git -C "$integration" diff --name-only "$base" HEAD
+(
+  cd "$integration" || exit $?
+  integration_changes=$(git status --porcelain) || exit $?
+  if [ -n "$integration_changes" ]; then
+    printf '%s\n' 'Integration worktree must be clean.' "$integration_changes" >&2
+    exit 1
+  fi
+
+  node --test test/handoff.test.mts &&
+    git rev-parse HEAD &&
+    git diff --name-only "$base" HEAD
+)
 ```
 
 For a live run, compare the time until the last worker finished with the
