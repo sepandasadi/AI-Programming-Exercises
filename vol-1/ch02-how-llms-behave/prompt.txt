@@ -1,0 +1,10 @@
+Apply these rules from Relay's issue-triage spec to the issue below.
+
+An explicit priority label wins. With no priority label, the whole title term "outage" sets P1. P1 gets four business hours. Business hours are Monday to Friday, 09:00–17:00 UTC. Only time inside that window counts. An arrival outside business hours starts counting at the next opening. There are no holiday exceptions.
+
+Issue 412
+Title: Checkout outage after deploy
+Labels: area:payments
+Created: 2026-11-27T16:30:00Z (Friday)
+
+Return only a JSON object with three keys: "priority", "respondBy", and "explanation". Use UTC with milliseconds for "respondBy". Write one sentence explaining the deadline. Use the supplied rules.
