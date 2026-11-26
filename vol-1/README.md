@@ -15,3 +15,4 @@ Use Node.js 22.18 or newer to run the standalone `.mts` scripts directly.
 | Ch. 9 Securing AI-Assisted Development | [ch09-securing-ai-assisted-development](ch09-securing-ai-assisted-development/) |
 | Ch. 10 Multi-Agent & Background Workflows | [ch10-multi-agent-and-background-workflows](ch10-multi-agent-and-background-workflows/) |
 | Ch. 11 AI in the Delivery Pipeline | [ch11-ai-in-the-delivery-pipeline](ch11-ai-in-the-delivery-pipeline/) |
+| Ch. 12 Team Adoption, Measurement & Career | [ch12-team-adoption-measurement-and-career](ch12-team-adoption-measurement-and-career/) |
