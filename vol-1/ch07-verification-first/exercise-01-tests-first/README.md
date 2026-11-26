@@ -14,7 +14,8 @@ second one writing the code against tests it may not change.
    `// spec: business-time-between`.
 3. Review the tests: work out every expected value from the spec and
    a calendar, not by running code. Fix or add tests, then commit them
-   while they fail.
+   while they fail. Save that commit ID in the shell you will use for
+   verification: `red_tests=$(git rev-parse HEAD)`.
 4. Lock the test file. Make it read-only, or use your agent's hook
    (copy `relay/scripts/guard-tests.mts` from the chapter checkout into
    your `v1-ch07` workspace. It supports the pre-edit hooks of
@@ -26,10 +27,22 @@ second one writing the code against tests it may not change.
 
 - Before session B: `pnpm test` fails only in your new test file, each
   failure with the stub's error.
-- After session B: `git diff --exit-code -- '*.test.ts'` prints nothing,
-  `pnpm build && pnpm typecheck && pnpm test` pass, and
-  `pnpm spec:check docs/specs/business-time-between.md` lists AC-1 to
-  AC-4 as `ok`.
+- After session B, run from `relay/` in the shell where you saved
+  `red_tests`:
+
+  ```sh
+  git diff --exit-code "$red_tests" -- '*.test.ts' &&
+    git diff --cached --exit-code "$red_tests" -- '*.test.ts' &&
+    untracked=$(git ls-files -o --exclude-standard \
+      -- '*.test.ts') &&
+    test -z "$untracked" &&
+    pnpm build && pnpm typecheck && pnpm test
+  ```
+
+  Both diffs must be empty and `$untracked` must contain no paths. Review
+  any staged changes or new files before continuing. Then run
+  `pnpm spec:check docs/specs/business-time-between.md` and check that
+  AC-1 to AC-4 are `ok`.
 
 ## Solution
 

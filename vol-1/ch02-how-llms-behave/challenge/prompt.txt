@@ -1,0 +1,23 @@
+Triage the final issue and return one JSON object.
+
+Priority: use an explicit priority label if present. Otherwise the whole title word "outage" sets P1.
+Deadline: if a creation timestamp is missing, return JSON null and state that the creation timestamp is missing. Never invent a starting time. If it is present, calculate a P1 deadline by adding four business hours, counting Monday to Friday 09:00–17:00 UTC. Return the deadline in UTC with milliseconds.
+
+Example with a timestamp
+Title: Search outage
+Labels: area:search
+Created: 2026-11-24T09:00:00Z
+Output: {"priority":"P1","respondBy":"2026-11-24T13:00:00.000Z","explanation":"Four business hours from 09:00 UTC ends at 13:00 UTC."}
+
+Example without a timestamp
+Title: Update search filters
+Labels: priority:p2
+Created: missing
+Output: {"priority":"P2","respondBy":null,"explanation":"The creation timestamp is missing."}
+
+Final issue
+Title: Checkout outage after deploy
+Labels: area:payments
+Created: missing
+
+Return only the JSON object for the final issue. Use keys priority, respondBy and explanation.

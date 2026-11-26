@@ -13,7 +13,7 @@ This checkout includes the agent config built in the chapter: layered `AGENTS.md
 | --- | --- | --- |
 | [exercise-01-trim-the-instructions](exercise-01-trim-the-instructions/) | Cut a 110-line `AGENTS.md` to what belongs | `pnpm agents:check` passes; prompt or memory inspection shows the directory layer |
 | [exercise-02-command-and-skill](exercise-02-command-and-skill/) | Add `GET /sla` with `/task` and the `add-api-route` skill | `spec:check` passes; the smoke script prints the table and `HTTP 200` |
-| [exercise-03-stop-hook](exercise-03-stop-hook/) | Keep the agent working while `pnpm typecheck` fails, without a loop | The hook's tests pass, including `stop_hook_active` |
+| [exercise-03-stop-hook](exercise-03-stop-hook/) | Give the agent one corrective retry after a failed typecheck | Check the loop guard and report remaining errors |
 | [exercise-04-read-only-mcp](exercise-04-read-only-mcp/) | Connect GitHub's MCP server read-only | The MCP response matches `gh`; the server exposes only read tools |
 | [challenge](challenge/) | Grade the reviewer sub-agent on a change with planted bugs | Every finding reproduced or rejected; each planted problem found or missed |
 | [quiz.md](quiz.md) | Ten questions with answers | |
@@ -24,9 +24,8 @@ This checkout includes the agent config built in the chapter: layered `AGENTS.md
   with the green gate, `spec:check`, `agents:check`
   and the smoke script. Outputs quoted in the READMEs are from those
   runs.
-- Exercise 4: the config was parsed with `claude mcp get github` and
-  `codex mcp get github`. The live call needs your own fine-grained
-  token and was not run by the author.
+- Exercise 4: Claude Code found the fixture and Codex accepted the
+  explicit launch settings. The live call needs your own fine-grained token.
 - Steps that ask *your* agent to do something (the canary, `/task`, the
   reviewer) depend on your tool and model; the READMEs say what a pass
   looks like.

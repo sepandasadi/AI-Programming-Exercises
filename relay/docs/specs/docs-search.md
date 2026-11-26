@@ -35,8 +35,9 @@ only whitespace produces no section.
 
 A *term* is a run of letters, digits and combining marks
 that starts with a letter or digit. Terms compare after
-Unicode case folding: NFKC normalization, then lower, upper
-and lower case, then NFKC again. A term is at least two
+Relay's matching transform: NFKC normalization, then lower,
+upper and lower case, then NFKC again. For example, both
+`ı` and `i` become `i`. A term is at least two
 characters (code points) long after folding, so a word
 counts the same however it was typed: `é` is never a term,
 composed or decomposed, and the ligature `ﬀ` is the term
@@ -59,15 +60,15 @@ server cannot read is skipped, not fatal.
 - AC-1: Search is case-insensitive and returns every
   section that contains at least one query term, up to
   `limit` (AC-6).
-- AC-2: A section whose heading contains a term scores
-  higher than one with the same term only in its body,
-  as given by the score formula.
+- AC-2: Each heading occurrence scores 3 and each body
+  occurrence scores 1, summed over distinct query terms.
 - AC-3: Each result has `path` (relative to the docs root,
   forward slashes), `heading`, `line` (1-based line of the
   heading) and `snippet`.
-- AC-4: `snippet` is at most 160 characters of the section
-  body, whitespace collapsed, and contains the first
-  matching term found in the body, if any.
+- AC-4: `snippet` contains up to 160 UTF-16 code units
+  of the whitespace-collapsed body. It contains the first
+  matching body term if it fits. For a longer match, use
+  its trailing 160 units and keep surrogate pairs intact.
 - AC-5: Results are ordered by score descending, then
   `path` ascending, then `line` ascending.
 - AC-6: `limit` defaults to 5; values outside 1 to 20 or
@@ -76,9 +77,9 @@ server cannot read is skipped, not fatal.
   characters, returns 400 with `{ "error": string }`.
 - AC-8: A query with no matches returns 200 with
   `results: []`.
-- AC-9: The loader reads only `.md` files under the docs
-  root, skips symbolic links and files over 1 MB, and never
-  reads outside the root.
+- AC-9: Given a trusted docs tree whose paths stay stable
+  during loading, read only `.md` files below the resolved
+  root. Skip symbolic links and files over 1 MB.
 
 ## Interface
 
@@ -112,7 +113,11 @@ GET /search?q=rollback&limit=3
 ```
 
 The API reads the docs root from `RELAY_DOCS_DIR`
-(default: `fixtures/team-docs`).
+(default: `fixtures/team-docs`). Load only a trusted tree
+whose root path and descendants stay stable for the entire
+load. Use a stable snapshot if the source tree can change.
+The walk and subsequent file opens are separate operations.
+Where supported, `O_NOFOLLOW` guards the final path component.
 
 ## Constraints
 

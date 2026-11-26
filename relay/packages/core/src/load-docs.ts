@@ -14,10 +14,11 @@ const OPEN_FLAGS =
 /**
  * Loads every `.md` file under `root` and splits it into sections.
  *
- * Safety (D7): the root is resolved with `realpath` once; symlinks below it
- * are skipped, never followed; each file is opened with `O_NOFOLLOW` and
- * must be a regular file of at most 1,048,576 bytes; any path that would
- * resolve outside the root is rejected. Paths use `/` and are sorted.
+ * Pass a trusted tree whose root and descendants stay stable during loading.
+ * The walk starts at the resolved root and skips symlink entries. The relative
+ * path check is lexical. Files are opened later by path with `O_NOFOLLOW`
+ * where available, which guards the final component. Each file must be
+ * regular and at most 1,048,576 bytes. Paths use `/` and are sorted.
  * A missing root throws.
  */
 export async function loadDocs(
@@ -71,9 +72,9 @@ async function listMarkdown(
 }
 
 /**
- * Reads one file through a single handle opened with O_NOFOLLOW. Returns
- * undefined when the file is not a regular file, is over the size limit, or
- * was swapped for a symlink or removed after the directory walk.
+ * Opens one file with O_NOFOLLOW where supported, then checks and reads
+ * through the same handle. Skips non-regular, oversized and unreadable files,
+ * and handles final-component symlink errors on platforms that report them.
  */
 async function readDoc(
   full: string,

@@ -25,7 +25,8 @@ git -C "$integration" merge --ff --no-edit lab/priority &&
 exercise the commit you will report. Expect five passing tests, including
 both `integration:` cases. After they pass, record the commit and results
 and check the final diff against the base. Only the three formatter files
-should differ.
+should differ. Use a non-UTC process time zone to catch accidental use of
+local-time accessors.
 
 ```sh
 (
@@ -36,7 +37,7 @@ should differ.
     exit 1
   fi
 
-  node --test test/handoff.test.mts &&
+  TZ=America/Los_Angeles node --test test/handoff.test.mts &&
     git rev-parse HEAD &&
     git diff --name-only "$base" HEAD
 )

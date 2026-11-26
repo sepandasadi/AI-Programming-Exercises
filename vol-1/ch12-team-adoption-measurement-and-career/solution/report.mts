@@ -52,6 +52,7 @@ export function tokenCostUsd(usage: Usage, usdPerMillion: Usage) {
   ) / 1_000_000;
 }
 
+/** Assisted usage plus seat charges for one billing period. */
 export function pilotCostUsd(
   pairs: readonly TaskPair[],
   usdPerMillion: Usage,

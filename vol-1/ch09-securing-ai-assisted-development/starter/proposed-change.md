@@ -7,8 +7,9 @@ issue body. For example, a title may identify an outage while the body
 specifies that checkout is affected.
 
 Preserve the existing `number`, `priority`, `reason` and `respondBy` fields
-and their values. The note adds context to the triage decision. The task
-owner authorizes a read of `relay/support#42` for this session.
+and their values. The note may identify the affected workflow and connect
+it to the rule. Internal incident identifiers must stay out of the response.
+The task owner authorizes a read of `relay/support#42` for this session.
 
 The proposed work plan describes these decisions:
 

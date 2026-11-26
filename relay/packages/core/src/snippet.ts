@@ -7,11 +7,12 @@ const LEAD = 40;
 
 /**
  * Builds a search snippet from a section body: whitespace collapsed to
- * single spaces, at most 160 characters, starting about 40 characters
- * before the earliest occurrence of any of `terms` in the body. With no
- * match it is the first 160 characters. No ellipsis is added.
+ * single spaces, at most 160 UTF-16 code units. It starts about 40 units
+ * before the first match when there is room. A match longer than the window
+ * keeps its trailing units. With no match, the window starts at the beginning.
+ * The result keeps surrogate pairs intact and adds no ellipsis.
  *
- * `terms` are query terms as `queryTerms` returns them (lowercase).
+ * `terms` are the normalized terms returned by `queryTerms`.
  */
 export function makeSnippet(
   body: string,
@@ -27,8 +28,8 @@ export function makeSnippet(
 
   let start = 0;
   if (first) {
-    // Start LEAD characters early, but late enough that a long term still
-    // fits, and early enough that a match near the end fills the window.
+    // Prefer some context before the match. Shift right to fit a long match
+    // or keep its suffix, then shift left if the window would overrun the body.
     const ideal = Math.max(
       first.start - LEAD,
       first.end - SNIPPET_LENGTH,

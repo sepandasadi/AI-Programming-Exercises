@@ -8,7 +8,7 @@ Stryker set up in `relay/packages/core` (`pnpm mutate`).
 
 | Folder | Goal | Verification |
 | --- | --- | --- |
-| [exercise-01-tests-first](exercise-01-tests-first/) | Build `businessTimeBetween` with one session writing tests and another writing code | Tests fail against the stub, then pass; `git diff` shows no test changed in the code session |
+| [exercise-01-tests-first](exercise-01-tests-first/) | Build `businessTimeBetween` with one session writing tests and another writing code | Tests fail against the stub, then pass; Compare with the saved red-test commit and check for untracked tests |
 | [exercise-02-properties](exercise-02-properties/) | Write properties that catch a bug six example tests miss | Your properties fail on the starter and pass on your fix |
 | [exercise-03-mutation-testing](exercise-03-mutation-testing/) | Run Stryker on your code and act on the survivors | Every survivor is killed or classified, with a reason |
 | [exercise-04-catch-the-bug](exercise-04-catch-the-bug/) | Review the lab pull request and find its bug | A failing test that names the bug, then a fix that makes it pass |

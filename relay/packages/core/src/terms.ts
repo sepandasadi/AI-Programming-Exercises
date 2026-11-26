@@ -36,10 +36,9 @@ export function queryTerms(query: string): string[] {
 }
 
 /**
- * Unicode case folding for matching: compatibility-normalize, then lower-,
- * upper- and lower-case again (so "ẞ", "ß", "SS" and "ss" all agree), then
- * normalize again, since lower-casing can leave decomposed sequences ("İ"
- * becomes "i̇"). Folding twice gives the same result as folding once.
+ * Relay's case-insensitive matching rule: NFKC, then lower, upper and lower
+ * case, then NFKC again. This maps both "ı" and "i" to "i", and maps "ẞ",
+ * "ß", "SS" and "ss" to "ss".
  */
 export function foldCase(text: string): string {
   // Fast path: for ASCII the full fold equals toLowerCase(), and most

@@ -9,11 +9,17 @@ labels identify actors and versions within the exercise.
 | Release owner         | Relay API rotation owns the decision to promote or stop. A Relay maintainer reviews the contract and the tested revision.                                                                                                         |
 | Revision and exposure | `relay-11.1` represents the candidate, installed with `handoff_formatter_v2` at zero first. For the drill, ten of one hundred workspace buckets are eligible.                                                                     |
 | Verification          | Review the complete handoff against independently authored expectations for issues 42 and 43. Check bucket 9 is on the candidate and bucket 10 is on control. Record the exact revision and flag setting when attaching evidence. |
-| Proceed               | Both arms have at least 20 checked handoffs and zero mismatches. The release owner may approve the next step.                                                                                                                     |
+| Proceed               | The maintainer has verified the candidate build evidence. Both arms have at least 20 checked handoffs and zero mismatches. The release owner may approve the next step.                                                                                                                     |
 | Hold                  | An arm has fewer than 20 checked handoffs and neither arm has a known mismatch. Keep exposure fixed and investigate if the sample fails to grow.                                                                                  |
 | Stop                  | Any verified mismatch in either arm. End promotion. If control also fails, investigate the shared path and verify recovery before declaring the incident resolved.                                                                |
 | Recovery              | The on-call operator disables `handoff_formatter_v2` in the replay and verifies the previously exposed cohort. Follow the [runbook](runbook.md).                                                                                  |
 | Cleanup               | The Relay API rotation owns removing the flag and old branch after the last rollback window and after verifying all consumers can use the new formatter.                                                                          |
+
+## Candidate build evidence
+
+Missing. The Relay maintainer still needs the CI result tied to the exact
+`relay-11.1` candidate build and its artifact identity. Hold any promotion
+until the maintainer has verified that record and the canary criteria pass.
 
 ## Recorded canary evidence
 

@@ -22,7 +22,7 @@ contains settings and the SHA-256 of the [prompt](prompt.txt). The next
 | [Read the usage record](exercise-01-read-usage/) | Recompute the totals and the example price |
 | [Check the deadline](exercise-02-check-the-deadline/) | Compare two raw replies with the rule and the handler |
 | [Repeat the prompt](exercise-03-repeat-the-prompt/) | Keep the prompt and evaluation fixed across runs |
-| [Challenge: Remove a necessary fact](challenge/) | Look for a request for the missing timestamp |
+| [Challenge: Remove a necessary fact](challenge/) | Check for a `null` deadline and an explanation of the missing timestamp |
 | [Quiz](quiz.md) | Check your answers after reading |
 
 ## Run the lab locally
