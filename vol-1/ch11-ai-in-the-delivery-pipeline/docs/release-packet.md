@@ -15,5 +15,17 @@ labels identify actors and versions within the exercise.
 | Recovery              | The on-call operator disables `handoff_formatter_v2` in the replay and verifies the previously exposed cohort. Follow the [runbook](runbook.md).                                                                                  |
 | Cleanup               | The Relay API rotation owns removing the flag and old branch after the last rollback window and after verifying all consumers can use the new formatter.                                                                          |
 
-A live packet would carry evidence for a concrete build and actual routing
-configuration. These fixtures only illustrate the decision and evidence fields.
+## Recorded canary evidence
+
+- **Replay identity** `relay-11.1` is the regressed candidate in this record.
+  `relay-11.0` is the control. The [TypeScript fixtures](../lab/fixtures.mts)
+  supply the independent handoff expectations.
+- **Observation** `node lab/release.mts canary regression` at 10% exposure
+  checked 20 handoffs on each arm. Control had zero mismatches. Candidate
+  had 10. Bucket 9 reached the candidate and bucket 10 reached control.
+  The first mismatch was issue 43 in bucket 0. Its deadline omitted `UTC`.
+- **Decision** `stop`, exit status 3. Keep promotion stopped and follow the
+  rollback runbook. The [regression test](../lab/canary.test.mts) checks this
+  window's counts and decision.
+
+The release labels and captured results are from the local simulation.

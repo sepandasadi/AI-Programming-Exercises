@@ -47,13 +47,24 @@ test("the regressed candidate loses UTC on midnight handoffs", () => {
   const window = observe("regression", 10);
   assert.deepEqual(window.control, clean(20));
   assert.deepEqual(window.candidate, { checked: 20, mismatches: 10 });
+  assert.deepEqual(window.firstMismatch, {
+    arm: "candidate",
+    bucket: 0,
+    issue: 43,
+    expected:
+      "#43 Critical | Respond by 2026-01-01 00:00 UTC | Confirm the owner",
+    actual: "#43 Critical | Respond by 2026-01-01 00:00 | Confirm the owner",
+  });
   assert.equal(evaluateCanary(window.control, window.candidate), "stop");
 });
 
 test("flag off restores the handoff for the previously exposed cohort", () => {
   const window = runRollback();
+  assert.equal(window.restored, true);
   assert.equal(window.belowBoundary, "control");
   assert.equal(window.atBoundary, "control");
   assert.deepEqual(window.control, clean(40));
   assert.deepEqual(window.candidate, clean(0));
+  assert.deepEqual(window.candidateBuckets, []);
+  assert.equal(window.firstMismatch, null);
 });

@@ -16,10 +16,10 @@ if (
   console.log(JSON.stringify({ decision, flagPercent: 10, ...window }));
   process.exitCode = exitCodes[decision];
 } else if (command === "rollback" && scenario === undefined) {
-  const window = runRollback();
-  console.log(
-    JSON.stringify({ decision: "restored", flagPercent: 0, ...window }),
-  );
+  const { restored, ...window } = runRollback();
+  const decision = restored ? "restored" : "rollback-failed";
+  console.log(JSON.stringify({ decision, flagPercent: 0, ...window }));
+  process.exitCode = restored ? 0 : 1;
 } else {
   console.error(
     "Usage: node lab/release.mts canary <healthy|short|regression> | rollback",

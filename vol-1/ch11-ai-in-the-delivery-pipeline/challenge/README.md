@@ -17,10 +17,10 @@ node --test --test-name-pattern='flag off' "$rollback_scratch/lab/canary.test.mt
 ```
 
 **Verify** that the rollback command exits with status 1 and reports
-`rollback verification failed`. The focused test must also fail. At zero,
-bucket 0 still reaches the candidate with the inclusive predicate. The replay's
-failure is evidence to keep promotion stopped even though the flag is set
-to zero.
+`rollback-failed`. `candidateBuckets` contains bucket 0, and
+`firstMismatch` shows the expected and actual handoffs for issue 43. The
+candidate checked two handoffs and missed `UTC` on one. The focused test
+must also fail. Keep promotion stopped even though the flag is set to zero.
 
 **Solution** Restore the strict predicate in the scratch file. The rollback
 command must print `restored` with no candidate observations and the focused

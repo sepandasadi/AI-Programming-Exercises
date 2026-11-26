@@ -19,10 +19,12 @@
    control, 40 checked handoffs with zero mismatches on control, and zero
    observations on the candidate. Replaying issue 43 through the former
    candidate cohort checks that its displayed deadline again includes UTC.
-4. If any check fails, keep promotion stopped and involve the release
-   owner. Inspect the observed route and the handoff evidence. Record the
-   release label, flag setting, decision, and verification output in the
-   release log before handing off to the next operator.
+4. If verification reports `rollback-failed` and exits with status 1,
+   keep promotion stopped and involve the release owner. Use
+   `candidateBuckets` to see where the candidate still ran. If
+   `firstMismatch` contains a handoff, compare the expected and actual text.
+   Record the release label, flag setting, decision, and verification
+   output in the release log before handing off to the next operator.
 
 In a deployed service, verify observed flag propagation and repeat the
 probe where the problem occurred. Confirm recovery using service signals
