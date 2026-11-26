@@ -15,11 +15,12 @@ node --test baseline.test.mts boundary.test.mts
 Expect a nonzero exit, two passes, and one failure. Read the assertion
 diff. The result should include the ID you expected and one extra ID.
 A loader error or syntax error would give you different evidence.
-Compare your test with the [solution](solution/boundary.test.mts).
+Compare your test with the [solution](solution/boundary.fixture.mts).
 To use the book's fixture and get its IDs, run the following from scratch.
 
 ```sh
-cp "$lab_dir/exercise-02-pin-the-boundary/solution/boundary.test.mts" .
+boundary_dir="$lab_dir/exercise-02-pin-the-boundary/solution"
+cp "$boundary_dir/boundary.fixture.mts" boundary.test.mts
 node --test baseline.test.mts boundary.test.mts
 ```
 

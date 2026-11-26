@@ -8,11 +8,11 @@ assert the first two IDs in input order.
 
 ## Verification
 
-Compare with [the reference test](solution/challenge.test.mts). Copy it
+Compare with [the reference test](solution/challenge.fixture.mts). Copy it
 to scratch if you want to run the reference case.
 
 ```sh
-cp "$lab_dir/challenge/solution/challenge.test.mts" .
+cp "$lab_dir/challenge/solution/challenge.fixture.mts" challenge.test.mts
 node --test baseline.test.mts boundary.test.mts challenge.test.mts
 ```
 
