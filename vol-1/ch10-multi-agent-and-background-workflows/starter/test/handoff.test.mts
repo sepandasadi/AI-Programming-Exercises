@@ -26,6 +26,10 @@ test("deadline: displays the UTC date and minute", () => {
     formatDeadline("2026-01-01T00:00:00.000Z"),
     "2026-01-01 00:00 UTC",
   );
+  assert.equal(
+    formatDeadline("0042-01-01T00:00:00.000Z"),
+    "0042-01-01 00:00 UTC",
+  );
 });
 
 test("ownership: distinguishes assigned and unassigned issues", () => {

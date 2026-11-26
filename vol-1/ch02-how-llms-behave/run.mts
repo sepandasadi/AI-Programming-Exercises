@@ -9,28 +9,54 @@ type ChatCompletion = {
 };
 
 const endpoint = "http://127.0.0.1:18082/v1/chat/completions";
-if (process.argv.length !== 2) {
-  console.error("Usage: node run.mts");
+const [mode, challengeModel, ...extraArgs] = process.argv.slice(2);
+const abstention = mode === "--abstention";
+if (
+  (mode !== undefined && !abstention) ||
+  extraArgs.length > 0 ||
+  challengeModel === ""
+) {
+  console.error("Usage: node run.mts [--abstention [model-alias]]");
   process.exit(1);
 }
 
-const prompt = await readFile(new URL("prompt.txt", import.meta.url), "utf8");
+const promptPath = abstention ? "challenge/prompt.txt" : "prompt.txt";
+const prompt = await readFile(new URL(promptPath, import.meta.url), "utf8");
 const settings = {
-  model: "qwen2.5-coder-0.5b-instruct-q4_k_m",
+  model: challengeModel ?? "qwen2.5-coder-0.5b-instruct-q4_k_m",
   temperature: 0.8,
   top_p: 0.95,
   top_k: 40,
   max_tokens: 160,
 };
 const requests = 20;
+const responseFormat = {
+  type: "json_schema",
+  json_schema: {
+    name: "relay_triage",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        priority: { enum: ["P0", "P1", "P2", "P3"] },
+        respondBy: { anyOf: [{ type: "string" }, { type: "null" }] },
+        explanation: { type: "string" },
+      },
+      required: ["priority", "respondBy", "explanation"],
+      additionalProperties: false,
+    },
+  },
+};
 const body = JSON.stringify({
   ...settings,
+  ...(abstention ? { response_format: responseFormat } : {}),
   messages: [{ role: "user", content: prompt }],
 });
 console.log(
   JSON.stringify({
     ...settings,
     requests,
+    ...(abstention ? { responseFormat: responseFormat.type } : {}),
     startedAt: new Date().toISOString(),
     promptSha256: createHash("sha256").update(prompt).digest("hex"),
   }),

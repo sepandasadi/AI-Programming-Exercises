@@ -40,7 +40,10 @@ codex "${github_mcp[@]}"
 
 The local check should report `streamable_http`, the `/mcp/readonly` URL,
 `GITHUB_MCP_TOKEN` as the variable name, and the `X-MCP-Toolsets` header.
-Check the live connection and tool list in `/mcp` after launching.
+Check the live connection and tool list in `/mcp` after launching. If
+the HTTP endpoint returns `401`, check that the session inherited
+`GITHUB_MCP_TOKEN` from its launching shell and that the token is valid
+for the selected repository.
 
 ## Verification
 

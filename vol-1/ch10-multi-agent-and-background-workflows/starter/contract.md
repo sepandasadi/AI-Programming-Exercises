@@ -9,7 +9,9 @@ to prepare a plain-text handoff line for review.
   to `Low`. Preserve the exported `Priority` type and function signature.
 - `formatDeadline` displays a canonical UTC timestamp from `Date#toISOString`
   for a four-digit year as `YYYY-MM-DD HH:mm UTC`. Drop seconds and
-  milliseconds without rounding. Its caller has already validated the value.
+  milliseconds without rounding. The displayed values stay in UTC in any
+  host time zone. Preserve leading zeroes in the year. Its caller has
+  already validated the value.
 - `ownershipHint` returns `Confirm the owner` for an assigned issue and
   `Assign an owner` for an unassigned issue.
 - `formatHandoff` combines the three display fields with the issue number
