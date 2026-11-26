@@ -37,17 +37,21 @@ function summary(records) {
     durations.push(row.ms);
 
     const value = parseObject(row.text);
+    const respondBy = value?.respondBy;
     if (value) counts.json += 1;
     if (
-      typeof value?.respondBy === "string" &&
-      timestampWithZone.test(value.respondBy) &&
-      Date.parse(value.respondBy) === expectedDeadline
+      typeof respondBy === "string" &&
+      timestampWithZone.test(respondBy) &&
+      Date.parse(respondBy) === expectedDeadline &&
+      // Date.parse can roll an invalid day into the next month.
+      new Date(respondBy.slice(0, 10)).getUTCDate() ===
+        Number(respondBy.slice(8, 10))
     ) {
       counts.deadline += 1;
     }
     if (
       value?.priority === expected.priority &&
-      value.respondBy === expected.respondBy &&
+      respondBy === expected.respondBy &&
       typeof value.explanation === "string" &&
       value.explanation.trim() &&
       Object.keys(value).length === 3
