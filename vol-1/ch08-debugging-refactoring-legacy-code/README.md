@@ -1,15 +1,16 @@
 # Vol. 1, Ch. 8 — Debugging, Refactoring & Legacy Code
 
-Debug a small Go runbook lookup used in the chapter as a fictional
-predecessor to Relay's document search. The lab uses standard-library Go
-1.22 or newer and four synthetic runbooks. The tests send requests to an
-in-process HTTP handler. You can run them offline after installing Go.
+Debug a small TypeScript runbook lookup used in the chapter as a fictional
+predecessor to Relay's document search. The lab uses Node.js 22.18 or
+newer and four synthetic runbooks. The tests send requests to an
+in-process HTTP handler and run offline.
 
 Run these commands from this folder.
 
 ```sh
-go test ./...
-go test ./verification -run '^TestIncident$' -args -implementation=starter
+node --test verification/search.test.mts
+RELAY_LAB_STARTER=1 node --test --test-name-pattern '^incident' \
+  verification/search.test.mts
 ```
 
 The first command verifies the repair and compares the starter and
@@ -33,9 +34,9 @@ cd "$lab_copy"
 | [Challenge](challenge/)                                         | Check a match late in the corpus with a one-result limit              |
 | [Quiz](quiz.md)                                                 | Check your understanding against the answers                          |
 
-The [starter](starter/search.go) keeps request parsing, matching and
-JSON output together. The [solution](solution/search.go) parses at the
+The [starter](starter/search.mts) keeps request parsing, matching and
+JSON output together. The [solution](solution/search.mts) parses at the
 HTTP boundary, searches in a separate function and keeps the response
-contract. The [verification tests](verification/search_test.go) accept
-both handlers through `http.Handler`. Switch to the scratch copy before
-editing, and remove it when you finish.
+contract. The [verification tests](verification/search.test.mts) accept
+both handlers through `Request` and `Response`. Switch to the scratch
+copy before editing, and remove it when you finish.

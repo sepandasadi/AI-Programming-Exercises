@@ -2,7 +2,7 @@
 
 Run the same Relay triage prompt twenty times. Compare response text,
 JSON format, agreement with Relay, token usage and full-response latency.
-Node.js 22+ is enough to read the recorded run. A live run also needs a
+Node.js 22.18 or newer is enough to read the recorded run. A live run also needs a
 recent `llama-server` and a model download of about 470 MiB.
 
 ## Start with the recorded run
@@ -10,7 +10,7 @@ recent `llama-server` and a model download of about 470 MiB.
 Run this from the exercise folder.
 
 ```sh
-node summarize.mjs recorded/qwen2.5-coder-0.5b.jsonl
+node summarize.mts recorded/qwen2.5-coder-0.5b.jsonl
 ```
 
 The first line of the [recording](recorded/qwen2.5-coder-0.5b.jsonl)
@@ -53,7 +53,7 @@ Write each run to a separate scratch file outside the repo.
 
 ```sh
 run_file="$(mktemp)"
-node run.mjs > "$run_file" && node summarize.mjs "$run_file"
+node run.mts > "$run_file" && node summarize.mts "$run_file"
 ```
 
 The runner writes each completed response as it arrives. If the server
@@ -77,7 +77,7 @@ git worktree add --detach ../relay-llm-lab v1-ch07
 cd ../relay-llm-lab/relay
 pnpm install --frozen-lockfile
 pnpm build
-node "$exercises_root/vol-1/ch02-how-llms-behave/verify-relay.mjs"
+node "$exercises_root/vol-1/ch02-how-llms-behave/verify-relay.mts"
 ```
 
 The verifier must print `P1 | title term outage` on the first line and

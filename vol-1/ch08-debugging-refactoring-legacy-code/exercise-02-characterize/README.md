@@ -3,11 +3,12 @@
 Before editing the matching rule, record what the current handler does
 on a working query, a no-match query and an invalid request. Predict
 status, result order and the JSON fields for `q=dashboard` by reading
-[the fixture](../internal/corpus/corpus.go). Then inspect and run the
-[shared tests](../verification/search_test.go) from the lab root.
+[the fixture](../internal/corpus/corpus.mts). Then inspect and run the
+[shared tests](../verification/search.test.mts) from the lab root.
 
 ```sh
-go test ./verification -run '^TestCharacterization$/^starter$' -v
+node --test --test-name-pattern '^characterization: starter$' \
+  verification/search.test.mts
 ```
 
 Check the default and explicit limits, how the handler trims the query,

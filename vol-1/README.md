@@ -1,7 +1,8 @@
 # Vol. 1 exercises
 
 One folder per chapter, added as each chapter is written. See the chapter list in the
-book's table of contents.
+book's table of contents. Code examples and exercises use TypeScript.
+Use Node.js 22.18 or newer to run the standalone `.mts` scripts directly.
 
 | Chapter | Folder |
 | --- | --- |

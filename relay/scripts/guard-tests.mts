@@ -8,21 +8,26 @@ const PATH_KEYS = ["file_path", "path", "filePath"];
 const PATCH_FILE =
   /^\*\*\* (?:Add|Update|Delete) File: (.+)$/gm;
 
-function block(message) {
+function block(message: string): never {
   console.error(`Blocked: ${message}`);
   process.exit(2);
 }
 
 /** The paths an edit targets, or undefined if none is named. */
-function targetPaths(args) {
+function targetPaths(value: unknown): string[] | undefined {
+  if (typeof value !== "object" || value === null)
+    return undefined;
+  // Hook events may use different keys, so validate each field below.
+  const args = value as Record<string, unknown>;
   const paths = PATH_KEYS.map((k) => args?.[k]).filter(
     (p) => typeof p === "string",
   );
   // Codex's apply_patch names its files inside the patch.
   const patch = args?.input ?? args?.patch;
   if (typeof patch === "string") {
-    for (const m of patch.matchAll(PATCH_FILE))
-      paths.push(m[1]);
+    for (const [, path] of patch.matchAll(PATCH_FILE)) {
+      if (path !== undefined) paths.push(path);
+    }
   }
   return paths.length > 0 ? paths : undefined;
 }
@@ -30,7 +35,7 @@ function targetPaths(args) {
 let input = "";
 for await (const chunk of process.stdin) input += chunk;
 
-let args;
+let args: unknown;
 try {
   const event = JSON.parse(input || "{}");
   args = event.tool_input ?? event.toolArgs ?? event;

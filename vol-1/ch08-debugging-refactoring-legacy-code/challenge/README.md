@@ -1,7 +1,7 @@
 # Challenge — Apply the limit to matches
 
-Add a second `checkJSON` call to `TestIncident` in your scratch copy
-for `q=replication&limit=1`. The matching word is on the second line of
+In your scratch copy, add a second `await checkJSON(...)` call to the
+`incident` test for `q=replication&limit=1`. The matching word is on the second line of
 the last document. Check that the response contains exactly one result
 and preserves its preview. Explain what would happen if a migration
 applied `limit` to the input corpus before searching.
@@ -12,8 +12,9 @@ Run the extended test against the reference solution and your repaired
 starter.
 
 ```sh
-go test ./verification -run '^TestIncident$'
-go test ./verification -run '^TestIncident$' -args -implementation=starter
+node --test --test-name-pattern '^incident' verification/search.test.mts
+RELAY_LAB_STARTER=1 node --test --test-name-pattern '^incident' \
+  verification/search.test.mts
 ```
 
 ## Solution notes

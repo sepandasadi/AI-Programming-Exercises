@@ -1,8 +1,9 @@
 # Vol. 1, Ch. 5: Project Instructions & Extensibility
 
 Exercises for instruction files, commands, skills, hooks, MCP and
-sub-agents. Start from tag `v1-ch05`, where Relay has the agent
-config built in the chapter: layered `AGENTS.md` files, skills in
+sub-agents. Use Node.js 22.18 or newer and start each exercise from the
+checkout that contains this guide. Save its commit ID as your baseline.
+This checkout includes the agent config built in the chapter: layered `AGENTS.md` files, skills in
 `relay/.agents/skills/` (linked from `relay/.claude/skills`), hooks in
 `relay/scripts/hooks/`, GitHub's MCP server in `relay/.mcp.json` and
 `relay/.codex/config.toml`, the `reviewer` sub-agent, and
@@ -20,7 +21,7 @@ config built in the chapter: layered `AGENTS.md` files, skills in
 ## What was tested, and how
 
 - Exercises 1–3 and the challenge: every starter and solution was run
-  against `v1-ch05` with the green gate, `spec:check`, `agents:check`
+  with the green gate, `spec:check`, `agents:check`
   and the smoke script. Outputs quoted in the READMEs are from those
   runs.
 - Exercise 4: the config was parsed with `claude mcp get github` and

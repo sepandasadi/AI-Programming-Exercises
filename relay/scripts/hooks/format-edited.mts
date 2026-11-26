@@ -11,7 +11,7 @@ import {
   parseEvent,
   readStdin,
   targetPaths,
-} from "./hook-input.mjs";
+} from "./hook-input.mts";
 
 const ROOT = fileURLToPath(
   new URL("../..", import.meta.url),
@@ -21,7 +21,10 @@ const IGNORE = resolve(ROOT, ".prettierignore");
 const parsed = parseEvent(await readStdin());
 if (!parsed) process.exit(0); // nothing to format
 
-const cwd = parsed.event.cwd ?? process.cwd();
+const cwd =
+  typeof parsed.event.cwd === "string"
+    ? parsed.event.cwd
+    : process.cwd();
 for (const target of targetPaths(parsed.args)) {
   const file = resolve(cwd, target);
   const rel = relative(ROOT, file);
@@ -32,7 +35,7 @@ for (const target of targetPaths(parsed.args)) {
   });
   if (info.ignored || !info.inferredParser) continue;
 
-  let source;
+  let source: string;
   try {
     source = await readFile(file, "utf8");
   } catch {
@@ -47,7 +50,11 @@ for (const target of targetPaths(parsed.args)) {
     if (output !== source) await writeFile(file, output);
   } catch (error) {
     console.error(`Prettier could not format ${rel}:`);
-    console.error(String(error?.message ?? error));
+    console.error(
+      error instanceof Error
+        ? error.message
+        : String(error),
+    );
     process.exit(2);
   }
 }

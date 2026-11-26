@@ -2,9 +2,15 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
 
+type ChatCompletion = {
+  model?: unknown;
+  usage?: { prompt_tokens?: unknown; completion_tokens?: unknown };
+  choices?: { message?: { content?: unknown }; finish_reason?: unknown }[];
+};
+
 const endpoint = "http://127.0.0.1:18082/v1/chat/completions";
 if (process.argv.length !== 2) {
-  console.error("Usage: node run.mjs");
+  console.error("Usage: node run.mts");
   process.exit(1);
 }
 
@@ -42,15 +48,17 @@ for (let run = 1; run <= requests; run += 1) {
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    const result = await response.json();
+    const result: ChatCompletion = await response.json();
     if (result.model !== settings.model) {
       throw new Error("Unexpected model in response. Check the server alias.");
     }
     const usage = result.usage;
     const choice = result.choices?.[0];
     if (
-      !Number.isInteger(usage?.prompt_tokens) ||
-      !Number.isInteger(usage?.completion_tokens) ||
+      typeof usage?.prompt_tokens !== "number" ||
+      !Number.isInteger(usage.prompt_tokens) ||
+      typeof usage.completion_tokens !== "number" ||
+      !Number.isInteger(usage.completion_tokens) ||
       typeof choice?.message?.content !== "string" ||
       typeof choice.finish_reason !== "string"
     ) {
@@ -69,8 +77,9 @@ for (let run = 1; run <= requests; run += 1) {
       }),
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error(
-      `Run ${run} stopped after ${run - 1} completed requests. ${error.message}. Check the local server on port 18082.`,
+      `Run ${run} stopped after ${run - 1} completed requests. ${message}. Check the local server on port 18082.`,
     );
     process.exit(1);
   }

@@ -5,8 +5,10 @@ continuing to display its first line. Run the incident and starter
 characterization tests before extracting anything.
 
 ```sh
-go test ./verification -run '^TestIncident$' -args -implementation=starter
-go test ./verification -run '^TestCharacterization$/^starter$'
+RELAY_LAB_STARTER=1 node --test --test-name-pattern '^incident' \
+  verification/search.test.mts
+node --test --test-name-pattern '^characterization: starter$' \
+  verification/search.test.mts
 ```
 
 Record the small diff at this checkpoint. Then extract matching and
@@ -17,13 +19,13 @@ the diff for changes to validation, result order and response shape.
 
 ## Solution
 
-A minimal repair changes the comparison from `snippet` to `book.Body`.
+A minimal repair changes the comparison from `snippet` to `body`.
 Once both checks pass, compare the extracted function with the
-[reference solution](../solution/search.go). The solution also extracts
+[reference solution](../solution/search.mts). The solution also extracts
 request parsing, so the handler shows the HTTP steps in order. Run the
 full lab suite to check the reference and your edited starter on the
 same characterization cases.
 
 ```sh
-go test ./...
+node --test verification/search.test.mts
 ```

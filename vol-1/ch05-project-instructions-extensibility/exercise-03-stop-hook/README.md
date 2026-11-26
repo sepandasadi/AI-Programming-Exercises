@@ -5,8 +5,8 @@
 
 ## Instructions
 
-1. Start from tag `v1-ch05` on a new branch. Write
-   `relay/scripts/hooks/typecheck-on-stop.mjs`, using `hook-input.mjs`
+1. Start from the chapter checkout on a new branch. Write
+   `relay/scripts/hooks/typecheck-on-stop.mts`, using `hook-input.mts`
    for parsing. It should:
    - exit 0 at once if the event has `stop_hook_active: true` (the agent
      is already continuing because of this hook);
@@ -38,6 +38,6 @@
 
 `solution/relay/scripts/hooks/` holds the hook and its tests.
 `solution/stop-hook-entry.json` is the `Stop` entry for
-`.claude/settings.json`. Tested against `v1-ch05`: 4 tests pass, and with
+`.claude/settings.json`. The TypeScript solution passes all 4 hook tests. With
 a real type error in `packages/core` the hook exits 2 and prints the
 `TS2322` error.

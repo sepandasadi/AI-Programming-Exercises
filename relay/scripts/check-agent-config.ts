@@ -133,12 +133,12 @@ export function checkSkill(
 }
 
 /** Script paths a hook command runs, e.g.
- * `node "$CLAUDE_PROJECT_DIR"/scripts/hooks/x.mjs`. */
+ * `node "$CLAUDE_PROJECT_DIR"/scripts/hooks/x.mts`. */
 export function hookScripts(config: unknown): string[] {
   const text = JSON.stringify(config ?? {});
   return [
     ...text.matchAll(
-      /(scripts\/[\w./-]+\.(?:mjs|js|sh|ts))/g,
+      /(scripts\/[\w./-]+\.(?:m?[jt]s|sh))/g,
     ),
   ].map((m) => m[1]!);
 }

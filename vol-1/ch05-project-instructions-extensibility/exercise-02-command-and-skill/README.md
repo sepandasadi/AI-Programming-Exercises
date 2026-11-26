@@ -6,7 +6,7 @@ priority, using the `/task` command for each plan task and letting the
 
 ## Instructions
 
-1. Start from tag `v1-ch05` on a new branch. Copy `starter/relay/` over
+1. Start from the chapter checkout on a new branch. Copy `starter/relay/` over
    your `relay/` folder: it adds the spec
    (`docs/specs/sla-table.md`) and a two-task plan
    (`docs/plans/sla-table.md`).
@@ -48,6 +48,6 @@ tests must fail. If only one does, the tests don't pin the constraint.
 `solution/relay/` mirrors `relay/`: the spec and plan, `slaTable()` in
 `packages/core/src/triage.ts` (read from the existing `SLA` table), its
 tests in `sla.test.ts`, the route in `apps/api/src/app.ts`, its test in
-`app.sla.test.ts`, and a README section. Tested against `v1-ch05`: the
+`app.sla.test.ts`, and a README section. In the original verification run, the
 gate passes (200 core, 56 API and 35 script tests), `spec:check` lists
 AC-1 to AC-3 as `ok`, and the smoke output is the one above.
