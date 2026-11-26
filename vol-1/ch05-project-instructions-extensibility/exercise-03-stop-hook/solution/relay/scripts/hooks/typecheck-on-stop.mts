@@ -7,7 +7,7 @@
 // RELAY_STOP_CHECK overrides the command (for tests).
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { parseEvent, readStdin } from "./hook-input.mjs";
+import { parseEvent, readStdin } from "./hook-input.mts";
 
 const ROOT = fileURLToPath(
   new URL("../..", import.meta.url),

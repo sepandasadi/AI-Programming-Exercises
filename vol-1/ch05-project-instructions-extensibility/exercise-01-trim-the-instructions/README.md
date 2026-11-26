@@ -6,7 +6,7 @@ loads.
 
 ## Instructions
 
-1. Start from tag `v1-ch05` on a new branch. Copy
+1. Start from the chapter checkout on a new branch. Copy
    `starter/relay/AGENTS.md` over `relay/AGENTS.md`.
 2. From `relay/`, run `pnpm agents:check`. It fails:
 
@@ -45,6 +45,5 @@ loads.
 
 ## Solution
 
-The solution is Relay's own `relay/AGENTS.md` at `v1-ch05`
-(`git checkout v1-ch05 -- relay/AGENTS.md`). `solution/NOTES.md`
+The solution is `relay/AGENTS.md` from your baseline checkout. `solution/NOTES.md`
 explains where each part of the starter went.

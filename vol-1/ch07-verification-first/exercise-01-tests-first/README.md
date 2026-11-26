@@ -16,7 +16,8 @@ second one writing the code against tests it may not change.
    a calendar, not by running code. Fix or add tests, then commit them
    while they fail.
 4. Lock the test file. Make it read-only, or use your agent's hook
-   (`relay/scripts/guard-tests.mjs` is written for the pre-edit hooks of
+   (copy `relay/scripts/guard-tests.mts` from the chapter checkout into
+   your `v1-ch07` workspace. It supports the pre-edit hooks of
    Claude Code, Codex, Copilot, Cursor and Gemini CLI, and was tested with
    sample hook payloads; see the Tool Lens after section 7.6).
 5. **Session B.** Use Listing 7.3 with the new function and file names.

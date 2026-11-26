@@ -9,16 +9,17 @@ import {
   parseEvent,
   readStdin,
   targetPaths,
-} from "./hook-input.mjs";
+} from "./hook-input.mts";
 
 const ENV_FILE =
   /(?:^|[^\w.-])(\.env(?:\.[\w-]+)*)(?![\w.-])/g;
 const ALLOWED = new Set([".env.example"]);
 
 /** The first .env-style name in `text` that isn't allowed. */
-function envFileIn(text) {
-  for (const m of text.matchAll(ENV_FILE)) {
-    if (!ALLOWED.has(m[1])) return m[1];
+function envFileIn(text: string): string | undefined {
+  for (const [, match] of text.matchAll(ENV_FILE)) {
+    if (match !== undefined && !ALLOWED.has(match))
+      return match;
   }
   return undefined;
 }

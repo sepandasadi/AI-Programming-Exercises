@@ -7,18 +7,45 @@ const expectedDeadline = Date.parse(expected.respondBy);
 const timestampWithZone =
   /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):\d{2}(?::\d{2}(?:\.\d{1,3}0*)?)?(?:Z|[+-]\d{2}:?\d{2})$/;
 
-function parseObject(text) {
+type RunRecord = {
+  run: number;
+  inputTokens: number;
+  outputTokens: number;
+  ms: number;
+  stop: string;
+  text: string;
+};
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isCount(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0;
+}
+
+function isRun(value: unknown, run: number): value is RunRecord {
+  return (
+    isObject(value) &&
+    value.run === run &&
+    typeof value.text === "string" &&
+    typeof value.stop === "string" &&
+    isCount(value.inputTokens) &&
+    isCount(value.outputTokens) &&
+    isCount(value.ms)
+  );
+}
+
+function parseObject(text: string): Record<string, unknown> | null {
   try {
-    const value = JSON.parse(text);
-    return value && typeof value === "object" && !Array.isArray(value)
-      ? value
-      : null;
+    const value: unknown = JSON.parse(text);
+    return isObject(value) ? value : null;
   } catch {
     return null;
   }
 }
 
-function summary(records) {
+function summary(records: readonly RunRecord[]): string {
   const counts = {
     json: 0,
     deadline: 0,
@@ -28,7 +55,7 @@ function summary(records) {
     output: 0,
   };
   const texts = new Set();
-  const durations = [];
+  const durations: number[] = [];
   for (const row of records) {
     counts.input += row.inputTokens;
     counts.output += row.outputTokens;
@@ -61,7 +88,7 @@ function summary(records) {
   }
   durations.sort((left, right) => left - right);
   const middle = Math.floor(durations.length / 2);
-  const median = (durations[middle - 1] + durations[middle]) / 2;
+  const median = ((durations[middle - 1] ?? 0) + (durations[middle] ?? 0)) / 2;
   const dollars =
     (counts.input * prices.input + counts.output * prices.output) / 1_000_000;
   const n = records.length;
@@ -79,36 +106,32 @@ function summary(records) {
 
 try {
   const path = process.argv[2];
-  if (!path) throw new Error("Usage: node summarize.mjs <runs.jsonl>");
+  if (!path) throw new Error("Usage: node summarize.mts <runs.jsonl>");
   const raw = await readFile(path, "utf8");
-  const [metadata, ...records] = raw
+  const [metadata, ...rows]: unknown[] = raw
     .trim()
     .split("\n")
     .map((line) => JSON.parse(line));
   if (
-    metadata?.model !== "qwen2.5-coder-0.5b-instruct-q4_k_m" ||
+    !isObject(metadata) ||
+    metadata.model !== "qwen2.5-coder-0.5b-instruct-q4_k_m" ||
     metadata.requests !== 20
   ) {
     throw new Error("This summary expects the fixed Qwen lab.");
   }
-  if (records.length !== metadata.requests) {
+  if (rows.length !== metadata.requests) {
     throw new Error(
-      `Expected ${metadata.requests} complete runs, got ${records.length}.`,
+      `Expected ${metadata.requests} complete runs, got ${rows.length}.`,
     );
   }
-  for (const [index, row] of records.entries()) {
-    const values = [row.inputTokens, row.outputTokens, row.ms];
-    if (
-      row.run !== index + 1 ||
-      typeof row.text !== "string" ||
-      typeof row.stop !== "string" ||
-      !values.every((value) => Number.isInteger(value) && value >= 0)
-    ) {
+  const records = rows.map((row, index) => {
+    if (!isRun(row, index + 1)) {
       throw new Error(`Invalid record at run ${index + 1}.`);
     }
-  }
+    return row;
+  });
   console.log(summary(records));
 } catch (error) {
-  console.error(error.message);
+  console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 }

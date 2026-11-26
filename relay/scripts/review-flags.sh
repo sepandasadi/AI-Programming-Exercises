@@ -4,7 +4,7 @@
 # (default: main). Run `git add -N .` first to include
 # new, untracked files.
 base="$(git merge-base "${1:-main}" HEAD)"
-git diff "$base" --unified=0 -- '*.ts' '*.tsx' '*.js' '*.mjs' |
+git diff "$base" --unified=0 -- '*.ts' '*.mts' '*.tsx' '*.js' '*.mjs' |
   grep -E '^(\+\+\+ |\+[^+])' |
   grep -E -e '^\+\+\+ ' \
     -e '\bas [A-Z]\w*|as unknown|: any\b|<any>|[])\w]!([^=]|$)' \

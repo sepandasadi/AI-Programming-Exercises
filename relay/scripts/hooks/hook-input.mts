@@ -14,7 +14,16 @@ const COMMAND_KEYS = ["command", "cmd"];
 const PATCH_FILE =
   /^\*\*\* (?:Add|Update|Delete) File: (.+)$/gm;
 
-export async function readStdin() {
+function fields(value: unknown): Record<string, unknown> {
+  // JSON objects expose fields by name. Other values have no named hook fields.
+  return typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+export async function readStdin(): Promise<string> {
   let input = "";
   for await (const chunk of process.stdin) input += chunk;
   return input;
@@ -24,34 +33,41 @@ export async function readStdin() {
  * Parses a hook event. Returns undefined if the input is
  * not JSON, so callers can fail closed.
  */
-export function parseEvent(input) {
+export function parseEvent(input: string) {
   try {
-    const event = JSON.parse(input || "{}");
+    const value: unknown = JSON.parse(input || "{}");
+    if (value === null) return undefined;
+    const event = fields(value);
     let args = event.tool_input ?? event.toolArgs ?? event;
     // Copilot sends its tool arguments as a JSON string.
     if (typeof args === "string") args = JSON.parse(args);
-    return { event, args: args ?? {} };
+    return { event, args: fields(args) };
   } catch {
     return undefined;
   }
 }
 
 /** File paths the call names, including inside patches. */
-export function targetPaths(args) {
+export function targetPaths(
+  args: Record<string, unknown>,
+): string[] {
   const paths = PATH_KEYS.map((k) => args?.[k]).filter(
     (p) => typeof p === "string",
   );
   // Codex's apply_patch names its files inside the patch.
   const patch = args?.input ?? args?.patch;
   if (typeof patch === "string") {
-    for (const m of patch.matchAll(PATCH_FILE))
-      paths.push(m[1]);
+    for (const [, path] of patch.matchAll(PATCH_FILE)) {
+      if (path !== undefined) paths.push(path);
+    }
   }
   return paths;
 }
 
 /** Shell commands the call runs, as single strings. */
-export function commands(args) {
+export function commands(
+  args: Record<string, unknown>,
+): string[] {
   return COMMAND_KEYS.map((k) => args?.[k])
     .map((c) => (Array.isArray(c) ? c.join(" ") : c))
     .filter((c) => typeof c === "string");
@@ -59,7 +75,7 @@ export function commands(args) {
 
 /** Exit 2: "deny" in Claude Code, Codex, Copilot, Cursor
  * and Gemini CLI. The message on stderr goes to the agent. */
-export function block(message) {
+export function block(message: string): never {
   console.error(`Blocked: ${message}`);
   process.exit(2);
 }

@@ -9,7 +9,7 @@ settings as in the recorded lab.
 ## Verification
 
 With the [local server](../README.md#run-the-lab-locally) running, use
-`node run.mjs` to capture the replies. Score the raw replies against the
+`node run.mts` to capture the replies. Score the raw replies against the
 challenge contract. An acceptable JSON object contains `priority: "P1"`,
 `respondBy: null`, and an `explanation` that names the creation timestamp
 as missing. Count formatting failures separately. The original scorer

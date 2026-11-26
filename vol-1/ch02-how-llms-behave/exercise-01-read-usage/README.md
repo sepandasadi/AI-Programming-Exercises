@@ -13,7 +13,7 @@ for a different model or a multistep coding agent.
 ## Verification
 
 From the [chapter folder](../), run
-`node summarize.mjs recorded/qwen2.5-coder-0.5b.jsonl` and compare the
+`node summarize.mts recorded/qwen2.5-coder-0.5b.jsonl` and compare the
 totals to yours. Compare the first and last response objects. Input usage
 should be equal even though the output text and length differ.
 
@@ -42,34 +42,7 @@ Then `/tokenize` counts the formatted text with no extra special tokens
 added by the tokenizer.
 
 ```sh
-node --input-type=module <<'JS'
-import { readFile } from "node:fs/promises";
-
-async function post(path, body) {
-  const response = await fetch(`http://127.0.0.1:18082${path}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
-  return response.json();
-}
-
-async function count(content) {
-  const { tokens } = await post("/tokenize", { content, add_special: false });
-  return tokens.length;
-}
-
-const prompt = await readFile("prompt.txt", "utf8");
-const issue = prompt.split("\n\n").find((block) => block.startsWith("Issue 412\n"));
-const framed = await post("/apply-template", {
-  messages: [{ role: "user", content: prompt }],
-});
-
-console.log("Issue alone:", await count(issue));
-console.log("Raw prompt:", await count(prompt));
-console.log("Chat-framed prompt:", await count(framed.prompt));
-JS
+node count-tokens.mts
 ```
 
 The issue block from `Issue 412` through `Created:`, with no trailing

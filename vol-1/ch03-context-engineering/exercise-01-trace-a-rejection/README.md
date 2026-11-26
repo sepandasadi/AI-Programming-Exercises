@@ -9,7 +9,7 @@ with two results from the request handler. Keep the work read-only.
 
 The report should cite AC-6 and the spelling rule in Behavior. Follow the
 path it gives through `apps/api/src/app.ts` and the schema it calls. Run
-`verify-search.mjs` yourself and compare the report with the output.
+`verify-search.mts` yourself and compare the report with the output.
 
 ## Solution
 

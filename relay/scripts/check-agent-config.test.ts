@@ -60,14 +60,14 @@ describe("parsing", () => {
               hooks: [
                 {
                   command:
-                    'node "$CLAUDE_PROJECT_DIR"/scripts/hooks/x.mjs',
+                    'node "$CLAUDE_PROJECT_DIR"/scripts/hooks/x.mts',
                 },
               ],
             },
           ],
         },
       }),
-    ).toEqual(["scripts/hooks/x.mjs"]);
+    ).toEqual(["scripts/hooks/x.mts"]);
   });
 });
 
@@ -190,7 +190,7 @@ describe("checkAgentConfig", () => {
               hooks: [
                 {
                   type: "command",
-                  command: "node scripts/hooks/gone.mjs",
+                  command: "node scripts/hooks/gone.mts",
                 },
               ],
             },
@@ -202,7 +202,7 @@ describe("checkAgentConfig", () => {
       {
         file: ".claude/settings.json",
         problem:
-          "runs scripts/hooks/gone.mjs, which does not exist",
+          "runs scripts/hooks/gone.mts, which does not exist",
       },
     ]);
   });

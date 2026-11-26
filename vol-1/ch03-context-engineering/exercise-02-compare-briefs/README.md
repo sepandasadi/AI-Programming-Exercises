@@ -25,7 +25,7 @@ the same brief and append the pointers below it.
 For each run, record the file paths it opened, the claims it made about
 the behavior and the evidence for each claim. Count the distinct files
 read when the trace shows them. Check every behavior claim against the
-spec and `verify-search.mjs`.
+spec and `verify-search.mts`.
 
 ## Solution notes
 

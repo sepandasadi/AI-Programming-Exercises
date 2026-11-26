@@ -9,7 +9,7 @@
             "type": "command",
             "command": "node",
             "args": [
-              "${CLAUDE_PROJECT_DIR}/scripts/hooks/protect-env.mjs"
+              "${CLAUDE_PROJECT_DIR}/scripts/hooks/protect-env.mts"
             ],
             "onFailure": "block"
           }
@@ -24,7 +24,7 @@
             "type": "command",
             "command": "node",
             "args": [
-              "${CLAUDE_PROJECT_DIR}/scripts/hooks/format-edited.mjs"
+              "${CLAUDE_PROJECT_DIR}/scripts/hooks/format-edited.mts"
             ]
           }
         ]

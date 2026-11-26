@@ -36,7 +36,7 @@ confirm it can't write.
 ## Solution
 
 There is no code to write. `relay/.mcp.json` and
-`relay/.codex/config.toml` at `v1-ch05` are the solution. The author
+`relay/.codex/config.toml` in the chapter checkout are the solution. The author
 checked that both parse (`claude mcp get github`, `codex mcp get github`)
 and that Claude Code warns when `GITHUB_MCP_TOKEN` is unset. The live
 calls need your token and were not run by the author.

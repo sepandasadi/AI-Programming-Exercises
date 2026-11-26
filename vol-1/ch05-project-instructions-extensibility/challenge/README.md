@@ -11,10 +11,11 @@ reviewer runs, or you'll grade it against what you already know.
 
 ## Instructions
 
-1. Start from tag `v1-ch05` on a new branch:
+1. Start from the chapter checkout on a new branch:
 
    ```sh
-   git switch -c review-sla v1-ch05
+   git rev-parse HEAD  # save this baseline commit ID
+   git switch -c review-sla
    git apply vol-1/ch05-project-instructions-extensibility/challenge/sla-table.patch
    git add -A && git commit -m "Add GET /sla (spec: sla-table)"
    ```
@@ -22,8 +23,8 @@ reviewer runs, or you'll grade it against what you already know.
 2. From `relay/`, run the gate and `pnpm spec:check
    docs/specs/sla-table.md`. Both pass.
 3. In a fresh session, ask: "Use the reviewer sub-agent to review this
-   branch against `v1-ch05` for `docs/specs/sla-table.md`." In a tool
-   without Claude Code's sub-agent format, give a fresh session the body
+   branch against the saved baseline commit for `docs/specs/sla-table.md`."
+   In a tool without Claude Code's sub-agent format, give a fresh session the body
    of `relay/.claude/agents/reviewer.md` as its brief.
 4. Review the branch yourself, with the Ch. 7 checklist, before reading
    the reviewer's report.

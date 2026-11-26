@@ -1,7 +1,7 @@
 # Exercise 3 — Repeat the prompt
 
 [Start the local server](../README.md#run-the-lab-locally). Copy the lab
-folder to a scratch directory and run `node run.mjs` there. Save the
+folder to a scratch directory and run `node run.mts` there. Save the
 output. Repeat at the same settings or change only `temperature` in the
 scratch copy to `0.2` and run a second batch. Keep the model, prompt,
 output cap, and scoring rule fixed.
@@ -13,7 +13,7 @@ differently.
 
 ## Verification
 
-Run `node summarize.mjs <path-to-output>` for each live batch. Check the
+Run `node summarize.mts <path-to-output>` for each live batch. Check the
 settings and prompt digest in the first line of each file. Record total
 input and output tokens, distinct texts, parseable replies, correct
 deadline instants, exact matches, and median latency. Pick a pair of

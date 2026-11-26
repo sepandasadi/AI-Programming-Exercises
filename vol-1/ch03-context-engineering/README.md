@@ -1,6 +1,6 @@
 # Vol. 1, Ch. 3 — Context Engineering
 
-Use Relay at `v1-ch07`. Keep this exercise folder available when checking
+Use Node.js 22.18 or newer and Relay at `v1-ch07`. Keep this exercise folder available when checking
 out the tag, since the tag predates it. Run from the repository root:
 
 ```sh
@@ -9,7 +9,7 @@ git worktree add --detach ../relay-context-lab v1-ch07
 cd ../relay-context-lab/relay
 pnpm install --frozen-lockfile
 pnpm build
-node "$exercises_root/vol-1/ch03-context-engineering/verify-search.mjs"
+node "$exercises_root/vol-1/ch03-context-engineering/verify-search.mts"
 ```
 
 The last command runs two requests from the lab's `relay/` directory

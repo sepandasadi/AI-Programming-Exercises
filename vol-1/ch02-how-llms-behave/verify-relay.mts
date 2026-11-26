@@ -5,7 +5,13 @@ import { pathToFileURL } from "node:url";
 
 // Run from the built Relay checkout at v1-ch07.
 const url = pathToFileURL(resolve("apps/api/dist/app.js"));
-const { createApp } = await import(url.href);
+const {
+  createApp,
+}: {
+  createApp(): {
+    request(path: string, options: RequestInit): Promise<Response>;
+  };
+} = await import(url.href);
 const body = await readFile("fixtures/issues/friday-outage.json", "utf8");
 const response = await createApp().request("/triage", {
   method: "POST",
@@ -13,7 +19,8 @@ const response = await createApp().request("/triage", {
   body,
 });
 assert.equal(response.status, 200);
-const result = await response.json();
+const result: { priority: unknown; reason: unknown; respondBy: unknown } =
+  await response.json();
 assert.equal(result.priority, "P1");
 assert.equal(result.reason, "title term outage");
 assert.equal(result.respondBy, "2026-11-30T12:30:00.000Z");

@@ -34,9 +34,9 @@ function run(script: string, input: unknown) {
   return { code: res.status, stderr: res.stderr };
 }
 
-describe("protect-env.mjs", () => {
+describe("protect-env.mts", () => {
   const guard = (input: unknown) =>
-    run("protect-env.mjs", input);
+    run("protect-env.mts", input);
 
   it("blocks Claude Code reading .env", () => {
     const r = guard({
@@ -111,7 +111,7 @@ describe("protect-env.mjs", () => {
   });
 });
 
-describe("format-edited.mjs", () => {
+describe("format-edited.mts", () => {
   let dir = "";
   beforeAll(async () => {
     dir = await mkdtemp(join(ROOT, ".hook-test-"));
@@ -123,7 +123,7 @@ describe("format-edited.mjs", () => {
   it("formats a TypeScript file the agent wrote", async () => {
     const file = join(dir, "messy.ts");
     await writeFile(file, "export const a = {b:1,c:[1,2]}");
-    const r = run("format-edited.mjs", {
+    const r = run("format-edited.mts", {
       tool_name: "Write",
       tool_input: { file_path: file },
     });
@@ -136,7 +136,7 @@ describe("format-edited.mjs", () => {
   it("reports a file Prettier cannot parse", async () => {
     const file = join(dir, "broken.ts");
     await writeFile(file, "export const = ;");
-    const r = run("format-edited.mjs", {
+    const r = run("format-edited.mts", {
       tool_input: { file_path: file },
     });
     expect(r.code).toBe(2);
@@ -147,7 +147,7 @@ describe("format-edited.mjs", () => {
     const md = join(dir, "notes.md");
     await writeFile(md, "#  Title\n");
     for (const file_path of [md, "/etc/hosts"]) {
-      const r = run("format-edited.mjs", {
+      const r = run("format-edited.mts", {
         tool_input: { file_path },
       });
       expect(r.code).toBe(0);
@@ -156,7 +156,7 @@ describe("format-edited.mjs", () => {
   });
 
   it("does nothing for a deleted file", () => {
-    const r = run("format-edited.mjs", {
+    const r = run("format-edited.mts", {
       tool_input: { file_path: join(dir, "gone.ts") },
     });
     expect(r.code).toBe(0);

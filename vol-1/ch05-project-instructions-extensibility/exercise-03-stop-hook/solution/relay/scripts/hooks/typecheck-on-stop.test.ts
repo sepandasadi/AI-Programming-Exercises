@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const HOOK = fileURLToPath(
-  new URL("typecheck-on-stop.mjs", import.meta.url),
+  new URL("typecheck-on-stop.mts", import.meta.url),
 );
 
 function stop(event: unknown, check: string) {
@@ -20,7 +20,7 @@ const FAIL =
   'node -e \'console.log("src/a.ts(3,1): error TS2322");' +
   " process.exit(2)'";
 
-describe("typecheck-on-stop.mjs", () => {
+describe("typecheck-on-stop.mts", () => {
   it("lets the agent stop when the check passes", () => {
     expect(
       stop({ hook_event_name: "Stop" }, PASS).code,
