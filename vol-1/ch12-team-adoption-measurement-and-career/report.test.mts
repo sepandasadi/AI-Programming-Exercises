@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { rates, relayPairs, seats } from './fixtures/relay-pilot.mts';
 import type { TaskPair } from './pilot-types.mts';
 
@@ -9,6 +11,7 @@ const { compare, decision, pilotCostUsd, tokenCostUsd } =
     : await import('./solution/report.mts');
 
 const docs = relayPairs.filter(pair => pair.lane === 'docs');
+const triage = relayPairs.filter(pair => pair.lane === 'triage');
 
 function fourDocsPairs(): TaskPair[] {
   return [...docs, ...docs.map(pair => ({ ...pair, id: `${pair.id}-repeat` }))];
@@ -17,6 +20,7 @@ function fourDocsPairs(): TaskPair[] {
 test('counts all assigned work and keeps effort and elapsed time separate', () => {
   const report = compare(relayPairs);
   assert.deepEqual(report, {
+    lane: 'mixed',
     pairCount: 4,
     baseline: {
       authorMinutes: 380, reviewMinutes: 80, teamMinutes: 460,
@@ -31,11 +35,26 @@ test('counts all assigned work and keeps effort and elapsed time separate', () =
 
 test('keeps the two task lanes visible', () => {
   const docsReport = compare(docs);
+  assert.equal(docsReport.lane, 'docs');
   assert.equal(docsReport.baseline.teamMinutes, 180);
   assert.equal(docsReport.assisted.teamMinutes, 150);
-  const triageReport = compare(relayPairs.filter(pair => pair.lane === 'triage'));
+  const triageReport = compare(triage);
+  assert.equal(triageReport.lane, 'triage');
   assert.equal(triageReport.baseline.teamMinutes, 280);
   assert.equal(triageReport.assisted.teamMinutes, 330);
+});
+
+test('rejects a rollout decision for mixed lanes', () => {
+  assert.throws(() => decision(compare(relayPairs)), /single task category/i);
+});
+
+test('replay prints decisions only for individual categories', () => {
+  const replay = fileURLToPath(new URL('./solution/replay.mts', import.meta.url));
+  const output = execFileSync(process.execPath, [replay], { encoding: 'utf8' });
+  assert.match(output, /^All tasks\b/);
+  const sections = output.split(/\n(?=Docs\n|Triage\n)/);
+  const decisions = sections.map(section => section.match(/^Decision: .+$/m)?.[0]);
+  assert.deepEqual(decisions, [undefined, 'Decision: extend', 'Decision: pause']);
 });
 
 test('rejects empty samples and duplicate pair IDs', () => {
@@ -54,11 +73,11 @@ test('charges each token bucket and counts spend on abandoned work', () => {
 });
 
 test('pauses on an observed defect even when other totals match the baseline', () => {
-  const fullReport = compare(relayPairs);
-  assert.equal(decision(fullReport), 'pause');
+  const report = compare(triage);
+  assert.equal(decision(report), 'pause');
   assert.equal(decision({
-    ...fullReport,
-    assisted: { ...fullReport.baseline, escaped: 1 },
+    ...report,
+    assisted: { ...report.baseline, escaped: 1 },
   }), 'pause');
 });
 

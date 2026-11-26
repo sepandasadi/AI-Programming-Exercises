@@ -34,6 +34,7 @@ export type ArmSummary = {
 };
 
 export type PilotReport = {
+  lane: TaskPair['lane'] | 'mixed';
   pairCount: number;
   baseline: ArmSummary;
   assisted: ArmSummary;

@@ -22,11 +22,12 @@
   still awaiting observations. Keep abandoned work in its assigned group.
   An escaped defect is a confirmed failure of a declared requirement after
   release, during the follow-up window. Track remediation effort separately.
-- **Decision.** Pause for any observed assisted escaped defect, lower assisted
-  acceptance or more than 15 extra review minutes per assisted task. Extend for
-  fewer than four pairs, incomplete follow-up or no effort improvement.
-  Otherwise, consider expanding the eligible category. Review the scope and
-  policy again before issuing access.
+- **Decision.** Apply each gate within the category under consideration.
+  Pause for any observed assisted escaped defect, lower assisted acceptance
+  or more than 15 extra review minutes per assisted task. Extend for fewer
+  than four pairs, incomplete follow-up or no effort improvement. Otherwise,
+  consider expanding that category. Review the scope and policy again before
+  issuing access.
 
 In the replay, all tasks have reached a disposition and accepted changes are
 released. The challenge adds an accepted change with follow-up still pending.
